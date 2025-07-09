@@ -36,21 +36,14 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: "#fff", fontSize: 20, marginBottom: 16 }}>
-        Medicines
-      </Text>
+      <Text style={{ color: "#fff", fontSize: 20, marginBottom: 16 }}>Medicines</Text>
       <FlatList
         data={medicines}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item }) => {
           const isExpired = item.expiry < new Date();
           return (
-            <View
-              style={[
-                styles.medicineItem,
-                isExpired && { backgroundColor: "#712121" },
-              ]}
-            >
+            <View style={[styles.medicineItem, isExpired && { backgroundColor: "#712121" }]}>
               <Text style={{ color: "#fff" }}>{item.name}</Text>
               <Text style={{ color: "#aaa", fontSize: 12, marginTop: 4 }}>
                 Expires: {item.expiry.toLocaleDateString()}
@@ -58,15 +51,10 @@ export default function Index() {
             </View>
           );
         }}
-        ListEmptyComponent={
-          <Text style={{ color: "#888" }}>No medicines added yet.</Text>
-        }
+        ListEmptyComponent={<Text style={{ color: "#888" }}>No medicines added yet.</Text>}
         contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
       />
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setModalVisible(true)}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
         <AntDesign name="plus" size={28} color="#fff" />
       </TouchableOpacity>
       <Modal
@@ -77,9 +65,7 @@ export default function Index() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={{ color: "#fff", marginBottom: 20 }}>
-              Add medicine
-            </Text>
+            <Text style={{ color: "#fff", marginBottom: 20 }}>Add medicine</Text>
             <TextInput
               style={styles.input}
               placeholder="Medicine name"
@@ -100,9 +86,7 @@ export default function Index() {
               ]}
               onPress={() => setShowDatePicker(true)}
             >
-              <Text style={{ color: "#fff" }}>
-                Expiry: {expiry.toLocaleDateString()}
-              </Text>
+              <Text style={{ color: "#fff" }}>Expiry: {expiry.toLocaleDateString()}</Text>
             </Pressable>
             {showDatePicker && (
               <DateTimePicker
