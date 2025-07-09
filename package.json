@@ -6,7 +6,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "run:android": "expo run:android",
-    "build:android": "eas build --platform android --local --environment development",
+    "build:android": "eas build --platform android --local --profile=development",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
