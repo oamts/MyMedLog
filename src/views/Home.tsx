@@ -18,7 +18,7 @@ type Medicine = {
   expiry: Date;
 };
 
-export default function Index() {
+export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [newMedicine, setNewMedicine] = useState("");
