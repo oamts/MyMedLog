@@ -11,12 +11,12 @@ export function MedicineList({ medicines }: MedicineListProps) {
       data={medicines}
       keyExtractor={(item, index) => item.name + index}
       renderItem={({ item }) => {
-        const isExpired = item.expiry < new Date();
+        const isExpired = new Date(item.expiry) < new Date();
         return (
           <View style={[styles.medicineItem, isExpired && { backgroundColor: "#712121" }]}>
             <Text style={{ color: "#fff" }}>{item.name}</Text>
             <Text style={{ color: "#aaa", fontSize: 12, marginTop: 4 }}>
-              Expires: {item.expiry.toLocaleDateString()}
+              Expires: {item.expiry}
             </Text>
           </View>
         );

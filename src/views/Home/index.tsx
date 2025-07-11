@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { selectMedicines } from "@/src/redux/selectors";
+import { addMedicine } from "@/src/redux/slice";
 import { Medicine } from "@/src/views/Home/types";
 import { MedicineList } from "@/src/views/Home/MedicineList";
 import { AddMedicineModal } from "@/src/views/Home/AddMedicineModal";
 import { AddButton } from "@/src/views/Home/AddButton";
+import { useAppDispatch, useAppSelector } from "@/src/redux/store";
 
 export function HomeView() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const medicines = useAppSelector(selectMedicines);
+  const dispatch = useAppDispatch();
 
   const handleAddMedicine = (medicine: Medicine) => {
-    setMedicines([...medicines, medicine]);
+    dispatch(addMedicine(medicine));
   };
 
   function toggleModal(isVisible?: boolean) {

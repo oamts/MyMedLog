@@ -2,6 +2,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Medicine } from "@/src/views/Home/types";
+import { randomUUID } from "expo-crypto";
 
 interface AddMedicineModalProps {
   modalVisible: boolean;
@@ -15,14 +16,18 @@ export function AddMedicineModal({
   onAddMedicine,
 }: AddMedicineModalProps) {
   const [newMedicine, setNewMedicine] = useState("");
-  const [expiry, setExpiry] = useState<Date>(new Date());
+  const [expiryDate, setExpiryDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleAddMedicine = () => {
     if (newMedicine.trim()) {
-      onAddMedicine({ name: newMedicine.trim(), expiry });
+      onAddMedicine({
+        name: newMedicine.trim(),
+        expiry: expiryDate.toLocaleDateString(),
+        id: randomUUID(),
+      });
       setNewMedicine("");
-      setExpiry(new Date());
+      setExpiryDate(new Date());
       toggleModal(false);
     }
   };
@@ -57,16 +62,16 @@ export function AddMedicineModal({
             ]}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={{ color: "#fff" }}>Expiry: {expiry.toLocaleDateString()}</Text>
+            <Text style={{ color: "#fff" }}>Expiry: {expiryDate.toLocaleDateString()}</Text>
           </Pressable>
           {showDatePicker && (
             <DateTimePicker
-              value={expiry}
+              value={new Date(expiryDate)}
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={(_, selectedDate) => {
                 setShowDatePicker(Platform.OS === "ios");
-                if (selectedDate) setExpiry(selectedDate);
+                if (selectedDate) setExpiryDate(selectedDate);
               }}
             />
           )}
