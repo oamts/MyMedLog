@@ -3,15 +3,15 @@ import { useState } from "react";
 import { Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Medicine } from "@/src/views/Home/types";
 
-type AddMedicineModalProps = {
+interface AddMedicineModalProps {
   modalVisible: boolean;
-  setModalVisible: (visible: boolean) => void;
+  toggleModal: (isVisible: boolean) => void;
   onAddMedicine: (medicine: Medicine) => void;
-};
+}
 
-export default function AddMedicineModal({
+export function AddMedicineModal({
   modalVisible,
-  setModalVisible,
+  toggleModal,
   onAddMedicine,
 }: AddMedicineModalProps) {
   const [newMedicine, setNewMedicine] = useState("");
@@ -23,7 +23,7 @@ export default function AddMedicineModal({
       onAddMedicine({ name: newMedicine.trim(), expiry });
       setNewMedicine("");
       setExpiry(new Date());
-      setModalVisible(false);
+      toggleModal(false);
     }
   };
 
@@ -32,7 +32,7 @@ export default function AddMedicineModal({
       visible={modalVisible}
       transparent
       animationType="slide"
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={() => toggleModal(false)}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -73,7 +73,7 @@ export default function AddMedicineModal({
           <View style={{ flexDirection: "row", marginTop: 16 }}>
             <Pressable
               style={[styles.modalButton, { backgroundColor: "#444" }]}
-              onPress={() => setModalVisible(false)}
+              onPress={() => toggleModal(false)}
             >
               <Text style={{ color: "#fff" }}>Cancel</Text>
             </Pressable>

@@ -5,7 +5,7 @@ type MedicineListProps = {
   medicines: Medicine[];
 };
 
-export default function MedicineList({ medicines }: MedicineListProps) {
+export function MedicineList({ medicines }: MedicineListProps) {
   return (
     <FlatList
       data={medicines}
