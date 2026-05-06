@@ -10,8 +10,8 @@ Status legend:
 ## Task List
 
 - `T-01` Finalize product scope and acceptance criteria (MVP locked) — `done`
-- `T-02` Confirm final stack (frontend, storage, PWA, notifications) — `todo`
-- `T-03` Initialize project scaffold (base folders, tooling, scripts) — `todo`
+- `T-02` Confirm final stack (frontend, storage, PWA, notifications) — `done` (see `docs/09-stack-lock.md`)
+- `T-03` Initialize project scaffold (base folders, tooling, scripts) — `in_progress`
 - `T-04` Configure PWA foundation (manifest, service worker, installability) — `todo`
 - `T-05` Implement medicine data model + validations — `todo`
 - `T-06` Implement local persistence (IndexedDB repository) — `todo`

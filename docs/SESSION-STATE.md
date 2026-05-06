@@ -2,38 +2,38 @@
 
 ## Project Snapshot
 - Project: MyMedLog
-- Date: YYYY-MM-DD
+- Date: 2026-05-05
 - Owner: Mateus
 - Assistant mode: Tech Lead + Mentor
 
 ## Current Phase
-- Milestone: M0 | M1 | M2 | M3 | M4 | M5
-- Phase goal: <short objective>
+- Milestone: M0
+- Phase goal: Initialize project scaffold based on locked stack decisions.
 
 ## Current Task
-- Task ID: T-XXX
-- Title: <task title>
-- Status: todo | in_progress | blocked | done
-- Why this task now: <1 line>
+- Task ID: T-03
+- Title: Initialize project scaffold (base folders, tooling, scripts)
+- Status: in_progress
+- Why this task now: T-02 stack is locked and implementation can start.
 
 ## Last Completed
-- Task ID: T-XXX
-- Result: <what was delivered>
+- Task ID: T-02
+- Result: Final stack locked for frontend, backend, offline storage, API contract, and typing strategy.
 - Evidence:
-  - `path/to/file.ext`
-  - `path/to/another.file`
+  - `docs/09-stack-lock.md`
+  - `docs/TASKS.md`
 
 ## Next Exact Step
-- Action to execute next: <literal next action>
-- Expected output: <what should be produced>
-- Definition of done for next step: <objective check>
+- Action to execute next: Create monorepo scaffold with `apps/web`, `apps/api`, and `packages/contracts`, then add base scripts.
+- Expected output: Runnable workspace with web and api initialized in TypeScript.
+- Definition of done for next step: Root scripts run, app/api start locally, and folders follow architecture plan.
 
 ## Open Decisions / Blockers
-- D-001: <decision needed> | Owner: <name> | Status: open
-- B-001: <blocker> | Impact: <impact> | Mitigation: <next action>
+- D-001: Choose package manager for monorepo (`npm` vs `pnpm`) | Owner: Mateus | Status: open
+- B-001: none | Impact: none | Mitigation: n/a
 
 ## Risks to Watch
-- R-001: <risk description> | Level: low | medium | high | Mitigation: <plan>
+- R-001: Android PWA notification behavior variance by browser | Level: medium | Mitigation: validate early during reminder implementation.
 
 ## Resume Prompt (Copy/Paste)
 ```text
