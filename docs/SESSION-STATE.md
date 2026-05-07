@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-05
-- Title: Implement medicine data model + validations
+- Task ID: T-07
+- Title: Build medicine CRUD UI (create/edit/list/delete)
 - Status: in_progress
-- Why this task now: PWA foundation is implemented in code and pending Android manual QA; domain contracts can advance in parallel.
+- Why this task now: contracts and local repository are ready, enabling UI flows over IndexedDB.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -26,20 +26,20 @@
 - Added schedule discriminated union (`fixed_time` and `interval_hours` with allowed values 6/8/12).
 - Added cross-field validation rules for dates (`endsOn`/`expiresOn` must be >= `startsOn`).
 - Monorepo typecheck passes after contract changes.
+- Added IndexedDB local repository using Dexie in `apps/web/src/services/db.ts`.
+- Added local create/list flow in UI, persisting medicine before optional API sync call.
 
 ## Last Completed
-- Task ID: T-03
-- Result: Monorepo scaffold created with web, api, contracts workspaces and successful typecheck.
+- Task ID: T-06
+- Result: Local persistence implemented with IndexedDB repository and wired to creation flow.
 - Evidence:
-  - `package.json`
-  - `apps/web/package.json`
-  - `apps/api/package.json`
-  - `packages/contracts/package.json`
+  - `apps/web/src/services/db.ts`
+  - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Consume `MedicineInput`/`Medicine` schemas from web form flow and API payload contracts.
-- Expected output: End-to-end typed medicine payload (validation-ready) shared across web and API.
-- Definition of done for next step: T-05 marked `done` with schema usage wired in at least one creation flow.
+- Action to execute next: Expand UI from create+list to full CRUD (edit/delete) over local IndexedDB data.
+- Expected output: User can create, edit, and delete medicines locally with immediate list updates.
+- Definition of done for next step: T-07 marked `done` with CRUD actions functional against local repository.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

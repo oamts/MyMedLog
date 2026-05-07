@@ -13,9 +13,9 @@ Status legend:
 - `T-02` Confirm final stack (frontend, storage, PWA, notifications) — `done` (see `docs/09-stack-lock.md`)
 - `T-03` Initialize project scaffold (base folders, tooling, scripts) — `done`
 - `T-04` Configure PWA foundation (manifest, service worker, installability) — `in_progress`
-- `T-05` Implement medicine data model + validations — `in_progress`
-- `T-06` Implement local persistence (IndexedDB repository) — `todo`
-- `T-07` Build medicine CRUD UI (create/edit/list/delete) — `todo`
+- `T-05` Implement medicine data model + validations — `done`
+- `T-06` Implement local persistence (IndexedDB repository) — `done`
+- `T-07` Build medicine CRUD UI (create/edit/list/delete) — `in_progress`
 - `T-08` Implement fixed-time reminder engine — `todo`
 - `T-09` Implement interval reminder engine (6h/8h/12h) — `todo`
 - `T-10` Implement notification delivery + permission handling — `todo`

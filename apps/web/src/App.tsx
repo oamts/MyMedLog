@@ -1,11 +1,22 @@
-import { useState } from "react";
-import { medicineInputSchema, type MedicineInput } from "@mymedlog/contracts";
+import { useEffect, useState } from "react";
+import {
+  medicineInputSchema,
+  type Medicine,
+  type MedicineInput
+} from "@mymedlog/contracts";
 import { useCreateMedicineMutation, useGetHealthQuery } from "./services/api";
+import { createMedicineLocal, listMedicinesLocal } from "./services/db";
 
 export function App() {
   const { data, isLoading, isError } = useGetHealthQuery();
   const [createMedicine, createState] = useCreateMedicineMutation();
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [localSaveMessage, setLocalSaveMessage] = useState<string | null>(null);
+  const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
+
+  useEffect(() => {
+    void listMedicinesLocal().then(setLocalMedicines);
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,7 +41,17 @@ export function App() {
       return;
     }
 
-    await createMedicine(parsed.data);
+    try {
+      const localMedicine = await createMedicineLocal(parsed.data);
+      setLocalSaveMessage(`Salvo localmente: ${localMedicine.name}`);
+      setLocalMedicines(await listMedicinesLocal());
+    } catch (error) {
+      setValidationError(error instanceof Error ? error.message : "Erro ao salvar localmente");
+      return;
+    }
+
+    await createMedicine(parsed.data).catch(() => null);
+    event.currentTarget.reset();
   }
 
   return (
@@ -85,12 +106,22 @@ export function App() {
           </button>
         </form>
         {validationError && <p style={{ color: "#b91c1c" }}>{validationError}</p>}
+        {localSaveMessage && <p style={{ color: "#065f46" }}>{localSaveMessage}</p>}
         {createState.isError && <p style={{ color: "#b91c1c" }}>Falha ao salvar medicamento.</p>}
         {createState.data && (
           <p>
             Medicamento salvo: <strong>{createState.data.name}</strong> (id {createState.data.id})
           </p>
         )}
+        <h2 style={{ marginTop: "1.5rem", marginBottom: "0.5rem", fontSize: "1.1rem" }}>
+          Medicamentos locais
+        </h2>
+        {localMedicines.length === 0 && <p>Nenhum medicamento salvo localmente.</p>}
+        {localMedicines.map((medicine) => (
+          <p key={medicine.id} style={{ margin: "0.25rem 0" }}>
+            <strong>{medicine.name}</strong> — {medicine.dosageAmount} {medicine.dosageUnit} (inicio {medicine.startsOn})
+          </p>
+        ))}
       </section>
     </main>
   );
