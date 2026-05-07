@@ -7,12 +7,32 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["favicon.svg", "apple-touch-icon.png", "mask-icon.svg"],
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
+        navigateFallback: "index.html",
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-webfonts",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              }
+            }
+          }
+        ]
+      },
       manifest: {
         name: "MyMedLog",
         short_name: "MyMedLog",
+        description: "Controle local de medicamentos e lembretes no celular.",
         start_url: "/",
+        scope: "/",
         display: "standalone",
+        orientation: "portrait",
         background_color: "#f4efe6",
         theme_color: "#0f766e",
         lang: "pt-BR",
@@ -26,6 +46,12 @@ export default defineConfig({
             src: "/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png"
+          },
+          {
+            src: "/pwa-maskable-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           }
         ]
       }

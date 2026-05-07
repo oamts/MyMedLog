@@ -16,6 +16,13 @@
 - Status: in_progress
 - Why this task now: T-03 scaffold is complete and ready for PWA hardening.
 
+## Progress Update
+- Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
+- Hardened PWA config in `apps/web/vite.config.ts` with manifest metadata and Workbox runtime caching.
+- Added explicit service worker registration via `apps/web/src/pwa.ts` and import in `apps/web/src/main.tsx`.
+- Added installability metadata in `apps/web/index.html` (`theme-color`, Apple tags, mask icon).
+- Local validation: `npm run build -w @mymedlog/web` succeeds and generates `sw.js` + precache manifest.
+
 ## Last Completed
 - Task ID: T-03
 - Result: Monorepo scaffold created with web, api, contracts workspaces and successful typecheck.
@@ -26,9 +33,9 @@
   - `packages/contracts/package.json`
 
 ## Next Exact Step
-- Action to execute next: Add production-ready PWA icons, service worker strategy details, and verify installability/offline shell.
-- Expected output: PWA baseline validated locally with manifest and service worker active.
-- Definition of done for next step: Web app installs on Android and loads shell offline after first load.
+- Action to execute next: Run Android manual validation (install prompt/add-to-home-screen, offline reload after first load, standalone launch behavior).
+- Expected output: Evidence that app installs and opens offline on Android with service worker active.
+- Definition of done for next step: T-04 marked `done` in `docs/TASKS.md` with manual QA notes captured.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed
