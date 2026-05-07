@@ -11,6 +11,10 @@
     "dev:api": "npm run dev -w @mymedlog/api",
     "dev:web": "npm run dev -w @mymedlog/web",
     "build": "npm run build -w @mymedlog/contracts && npm run build -w @mymedlog/api && npm run build -w @mymedlog/web",
-    "typecheck": "npm run typecheck -w @mymedlog/contracts && npm run typecheck -w @mymedlog/api && npm run typecheck -w @mymedlog/web"
+    "typecheck": "npm run typecheck -w @mymedlog/contracts && npm run typecheck -w @mymedlog/api && npm run typecheck -w @mymedlog/web",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   }
 }
