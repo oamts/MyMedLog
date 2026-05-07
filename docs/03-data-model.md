@@ -14,9 +14,7 @@
 Required MVP fields:
 - `id`
 - `name`
-- `dosage`
-- `quantity_in_stock`
-- `expiration_date`
+- `expiration_date` (optional)
 - `schedule_type_and_times`
 
 Extended operational fields (recommended in MVP foundation):
@@ -59,9 +57,7 @@ export type ExpirationAlertMode = 'single' | 'multiple'
 export interface Medicine {
   id: UUID
   name: string
-  dosage: string
-  quantity_in_stock: number
-  expiration_date: string // YYYY-MM-DD
+  expiration_date?: string // YYYY-MM-DD
   schedule_type_and_times: ReminderSchedule
   expiration_alert_config: ExpirationAlertConfig
   is_active: boolean
@@ -94,9 +90,7 @@ export interface ExpirationAlertConfig {
 
 ### 4.1 Medicine
 - `name`: required, trimmed, 1..120 chars.
-- `dosage`: required, trimmed, 1..60 chars.
-- `quantity_in_stock`: integer, min 0.
-- `expiration_date`: valid date in `YYYY-MM-DD`.
+- `expiration_date`: optional; when present, valid date in `YYYY-MM-DD`.
 - `is_active`: default `true`.
 - `version`: starts at `1`, increments on each mutation.
 

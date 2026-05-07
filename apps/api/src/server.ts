@@ -60,15 +60,11 @@ app.post<{ Body: unknown; Reply: CreateMedicineResponse }>(
         type: "object",
         properties: {
           name: { type: "string" },
-          dosageAmount: { type: "number" },
-          dosageUnit: { type: "string" },
           notes: { type: "string" },
-          startsOn: { type: "string", format: "date" },
-          endsOn: { type: "string", format: "date" },
           expiresOn: { type: "string", format: "date" },
           reminder: { type: "object" }
         },
-        required: ["name", "dosageAmount", "dosageUnit", "startsOn", "reminder"]
+        required: ["name", "reminder"]
       },
       response: {
         201: {
@@ -76,23 +72,13 @@ app.post<{ Body: unknown; Reply: CreateMedicineResponse }>(
           properties: {
             id: { type: "string", format: "uuid" },
             name: { type: "string" },
-            dosageAmount: { type: "number" },
-            dosageUnit: { type: "string" },
-            startsOn: { type: "string", format: "date" },
+            notes: { type: "string" },
+            expiresOn: { type: "string", format: "date" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
             reminder: { type: "object" }
           },
-          required: [
-            "id",
-            "name",
-            "dosageAmount",
-            "dosageUnit",
-            "startsOn",
-            "createdAt",
-            "updatedAt",
-            "reminder"
-          ]
+          required: ["id", "name", "createdAt", "updatedAt", "reminder"]
         }
       }
     }

@@ -7,7 +7,7 @@ class MyMedLogDatabase extends Dexie {
   constructor() {
     super("mymedlog");
     this.version(1).stores({
-      medicines: "id, name, startsOn, updatedAt"
+      medicines: "id, name, expiresOn, updatedAt"
     });
   }
 }

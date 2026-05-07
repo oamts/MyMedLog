@@ -25,9 +25,7 @@ export function App() {
     const formData = new FormData(event.currentTarget);
     const payload: MedicineInput = {
       name: String(formData.get("name") ?? ""),
-      dosageAmount: Number(formData.get("dosageAmount") ?? 0),
-      dosageUnit: String(formData.get("dosageUnit") ?? "mg") as MedicineInput["dosageUnit"],
-      startsOn: String(formData.get("startsOn") ?? ""),
+      expiresOn: String(formData.get("expiresOn") ?? "") || undefined,
       notes: String(formData.get("notes") ?? "") || undefined,
       reminder: {
         type: "fixed_time",
@@ -91,14 +89,7 @@ export function App() {
         <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
         <form onSubmit={onSubmit} style={{ display: "grid", gap: "0.75rem" }}>
           <input name="name" placeholder="Nome do medicamento" required />
-          <input name="dosageAmount" type="number" step="0.1" min="0.1" placeholder="Dosagem" required />
-          <select name="dosageUnit" defaultValue="mg">
-            <option value="mg">mg</option>
-            <option value="ml">ml</option>
-            <option value="tablet">tablet</option>
-            <option value="capsule">capsule</option>
-          </select>
-          <input name="startsOn" type="date" required />
+          <input name="expiresOn" type="date" />
           <input name="time" type="time" defaultValue="08:00" required />
           <input name="notes" placeholder="Observacoes (opcional)" />
           <button type="submit" disabled={createState.isLoading}>
@@ -119,7 +110,7 @@ export function App() {
         {localMedicines.length === 0 && <p>Nenhum medicamento salvo localmente.</p>}
         {localMedicines.map((medicine) => (
           <p key={medicine.id} style={{ margin: "0.25rem 0" }}>
-            <strong>{medicine.name}</strong> — {medicine.dosageAmount} {medicine.dosageUnit} (inicio {medicine.startsOn})
+            <strong>{medicine.name}</strong> — validade {medicine.expiresOn ?? "nao informada"}
           </p>
         ))}
       </section>

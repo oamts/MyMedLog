@@ -18,9 +18,7 @@ Permitir que o usuario:
 ### 3.1 Cadastro de medicamento
 - Criar medicamento com os campos:
   - `name`
-  - `dosage`
-  - `quantity_in_stock`
-  - `expiration_date`
+  - `expiration_date` (opcional)
   - `schedule_type_and_times`
 - Editar medicamento existente.
 - Remover medicamento.
@@ -78,8 +76,7 @@ Permitir que o usuario:
 ## 6. Regras de Negocio (MVP)
 
 1. Um medicamento deve possuir todos os campos minimos preenchidos para ser salvo.
-2. `quantity_in_stock` deve ser numero inteiro maior ou igual a zero.
-3. `expiration_date` deve ser data valida.
+2. `expiration_date`, quando informado, deve ser data valida.
 4. Horarios fixos aceitam 1..N horarios por dia.
 5. Intervalo aceita valores predefinidos no MVP: 6h, 8h, 12h.
 6. Alertas de validade nao podem ter valores negativos.
@@ -95,7 +92,7 @@ Permitir que o usuario:
 
 ### CA-02 Edicao
 - Dado um medicamento existente,
-- Quando o usuario altera dose/quantidade/validade/agendamento,
+- Quando o usuario altera nome/validade/agendamento,
 - Entao os novos dados persistem localmente.
 
 ### CA-03 Lembrete por horario

@@ -24,7 +24,7 @@
 - Local validation: `npm run build -w @mymedlog/web` succeeds and generates `sw.js` + precache manifest.
 - Added medicine contracts and validation schemas in `packages/contracts/src/index.ts` using Zod.
 - Added schedule discriminated union (`fixed_time` and `interval_hours` with allowed values 6/8/12).
-- Added cross-field validation rules for dates (`endsOn`/`expiresOn` must be >= `startsOn`).
+- Simplified medicine model by removing dosage and start/end dates; `expiresOn` is now optional.
 - Monorepo typecheck passes after contract changes.
 - Added IndexedDB local repository using Dexie in `apps/web/src/services/db.ts`.
 - Added local create/list flow in UI, persisting medicine before optional API sync call.
