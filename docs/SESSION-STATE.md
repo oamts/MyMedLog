@@ -2,34 +2,36 @@
 
 ## Project Snapshot
 - Project: MyMedLog
-- Date: 2026-05-05
+- Date: 2026-05-06
 - Owner: Mateus
 - Assistant mode: Tech Lead + Mentor
 
 ## Current Phase
 - Milestone: M0
-- Phase goal: Initialize project scaffold based on locked stack decisions.
+- Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-03
-- Title: Initialize project scaffold (base folders, tooling, scripts)
+- Task ID: T-04
+- Title: Configure PWA foundation (manifest, service worker, installability)
 - Status: in_progress
-- Why this task now: T-02 stack is locked and implementation can start.
+- Why this task now: T-03 scaffold is complete and ready for PWA hardening.
 
 ## Last Completed
-- Task ID: T-02
-- Result: Final stack locked for frontend, backend, offline storage, API contract, and typing strategy.
+- Task ID: T-03
+- Result: Monorepo scaffold created with web, api, contracts workspaces and successful typecheck.
 - Evidence:
-  - `docs/09-stack-lock.md`
-  - `docs/TASKS.md`
+  - `package.json`
+  - `apps/web/package.json`
+  - `apps/api/package.json`
+  - `packages/contracts/package.json`
 
 ## Next Exact Step
-- Action to execute next: Create monorepo scaffold with `apps/web`, `apps/api`, and `packages/contracts`, then add base scripts.
-- Expected output: Runnable workspace with web and api initialized in TypeScript.
-- Definition of done for next step: Root scripts run, app/api start locally, and folders follow architecture plan.
+- Action to execute next: Add production-ready PWA icons, service worker strategy details, and verify installability/offline shell.
+- Expected output: PWA baseline validated locally with manifest and service worker active.
+- Definition of done for next step: Web app installs on Android and loads shell offline after first load.
 
 ## Open Decisions / Blockers
-- D-001: Choose package manager for monorepo (`npm` vs `pnpm`) | Owner: Mateus | Status: open
+- D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed
 - B-001: none | Impact: none | Mitigation: n/a
 
 ## Risks to Watch

@@ -14,7 +14,7 @@ This document locks the technical stack decisions for T-02 and serves as the sou
 - Date/time: `date-fns` + `date-fns-tz`
 - Backend API: `Node.js` + `Fastify` + `TypeScript`
 - API style: `REST` + `OpenAPI 3.1`
-- Frontend API data fetching: `fetch` + `TanStack Query`
+- Frontend API data fetching: `RTK Query` (`@reduxjs/toolkit/query`)
 - Client typing from API: `openapi-typescript`
 - API versioning: `/api/v1`
 

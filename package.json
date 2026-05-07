@@ -1,0 +1,16 @@
+{
+  "name": "mymedlog",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @mymedlog/api & npm run dev -w @mymedlog/web",
+    "dev:api": "npm run dev -w @mymedlog/api",
+    "dev:web": "npm run dev -w @mymedlog/web",
+    "build": "npm run build -w @mymedlog/contracts && npm run build -w @mymedlog/api && npm run build -w @mymedlog/web",
+    "typecheck": "npm run typecheck -w @mymedlog/contracts && npm run typecheck -w @mymedlog/api && npm run typecheck -w @mymedlog/web"
+  }
+}
