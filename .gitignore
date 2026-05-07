@@ -1,3 +1,5 @@
 .idea/
 *.iml
 /node_modules/
+/packages/contracts/dist
+/apps/web/node_modules
