@@ -85,3 +85,6 @@ export type IntervalReminder = z.infer<typeof intervalReminderSchema>;
 export type Reminder = z.infer<typeof reminderSchema>;
 export type MedicineInput = z.infer<typeof medicineInputSchema>;
 export type Medicine = z.infer<typeof medicineSchema>;
+
+export type CreateMedicineRequest = MedicineInput;
+export type CreateMedicineResponse = Medicine;

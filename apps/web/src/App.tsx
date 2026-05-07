@@ -1,7 +1,37 @@
-import { useGetHealthQuery } from "./services/api";
+import { useState } from "react";
+import { medicineInputSchema, type MedicineInput } from "@mymedlog/contracts";
+import { useCreateMedicineMutation, useGetHealthQuery } from "./services/api";
 
 export function App() {
   const { data, isLoading, isError } = useGetHealthQuery();
+  const [createMedicine, createState] = useCreateMedicineMutation();
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setValidationError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const payload: MedicineInput = {
+      name: String(formData.get("name") ?? ""),
+      dosageAmount: Number(formData.get("dosageAmount") ?? 0),
+      dosageUnit: String(formData.get("dosageUnit") ?? "mg") as MedicineInput["dosageUnit"],
+      startsOn: String(formData.get("startsOn") ?? ""),
+      notes: String(formData.get("notes") ?? "") || undefined,
+      reminder: {
+        type: "fixed_time",
+        times: [String(formData.get("time") ?? "08:00")]
+      }
+    };
+
+    const parsed = medicineInputSchema.safeParse(payload);
+    if (!parsed.success) {
+      setValidationError(parsed.error.issues[0]?.message ?? "Dados invalidos");
+      return;
+    }
+
+    await createMedicine(parsed.data);
+  }
 
   return (
     <main
@@ -35,6 +65,30 @@ export function App() {
         {data && (
           <p>
             API status: <strong>{data.status}</strong> ({data.service}) em {data.timestamp}
+          </p>
+        )}
+        <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
+        <form onSubmit={onSubmit} style={{ display: "grid", gap: "0.75rem" }}>
+          <input name="name" placeholder="Nome do medicamento" required />
+          <input name="dosageAmount" type="number" step="0.1" min="0.1" placeholder="Dosagem" required />
+          <select name="dosageUnit" defaultValue="mg">
+            <option value="mg">mg</option>
+            <option value="ml">ml</option>
+            <option value="tablet">tablet</option>
+            <option value="capsule">capsule</option>
+          </select>
+          <input name="startsOn" type="date" required />
+          <input name="time" type="time" defaultValue="08:00" required />
+          <input name="notes" placeholder="Observacoes (opcional)" />
+          <button type="submit" disabled={createState.isLoading}>
+            {createState.isLoading ? "Salvando..." : "Salvar medicamento"}
+          </button>
+        </form>
+        {validationError && <p style={{ color: "#b91c1c" }}>{validationError}</p>}
+        {createState.isError && <p style={{ color: "#b91c1c" }}>Falha ao salvar medicamento.</p>}
+        {createState.data && (
+          <p>
+            Medicamento salvo: <strong>{createState.data.name}</strong> (id {createState.data.id})
           </p>
         )}
       </section>
