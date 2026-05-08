@@ -21,7 +21,7 @@ Status legend:
 - `T-10` Implement notification delivery + permission handling — `done`
 - `T-11` Implement expiration alerts (single + multiple) — `done`
 - `T-12` Add reminder/alert deduplication (`trigger_id` strategy) — `done`
-- `T-13` Add offline-first behavior checks across core flows — `todo`
+- `T-13` Add offline-first behavior checks across core flows — `done`
 - `T-14` Implement sync queue foundation (enqueue + persistence) — `todo`
 - `T-15` Implement auto-retry sync when backend returns — `todo`
 - `T-16` Add sync status indicator in UI — `todo`

@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-13
-- Title: Add offline-first behavior checks across core flows
+- Task ID: T-14
+- Title: Implement sync queue foundation (enqueue + persistence)
 - Status: in_progress
-- Why this task now: deduplication is now persisted locally; next step is verifying offline-first behavior across end-to-end flows.
+- Why this task now: offline-first QA is complete for current scope; the next milestone is queueing local mutations for future sync.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -45,19 +45,22 @@
 - Added persistent trigger deduplication store in IndexedDB (`deliveredTriggers`).
 - Notification dispatch now checks persisted trigger IDs before emitting and records successful deliveries.
 - Added trigger retention pruning to prevent unbounded dedupe storage growth.
+- Prepared offline QA execution checklist in `docs/10-offline-qa-checklist.md`.
+- Completed automated offline baseline (`test`, `typecheck`, `build`) with all checks passing.
+- Executed manual offline QA checklist with all mandatory scenarios marked PASS.
+- Fixed reminder due-window tolerance to include short late window and validated notification + dedupe behavior.
 
 ## Last Completed
-- Task ID: T-12
-- Result: Reminder/alert dedupe (`trigger_id`) implemented with persistence across reload/restart.
+- Task ID: T-13
+- Result: Offline-first behavior checks executed with PASS across core flows.
 - Evidence:
-  - `apps/web/src/services/db.ts`
-  - `apps/web/src/services/notifications.ts`
+  - `docs/10-offline-qa-checklist.md`
   - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Execute offline-first manual checks (create/edit/delete offline, reload offline, reminder evaluation without API).
-- Expected output: Documented pass/fail results for core offline flows with identified gaps.
-- Definition of done for next step: T-13 marked `done` with reproducible offline QA checklist evidence.
+- Action to execute next: Add local sync queue store and enqueue operations on create/update/delete medicine mutations.
+- Expected output: Durable pending operations persisted locally for future replay when backend/connectivity is available.
+- Definition of done for next step: T-14 marked `done` with queue write/read helpers and medicine mutation integration.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

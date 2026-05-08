@@ -3,3 +3,6 @@
 /node_modules/
 /packages/contracts/dist
 /apps/web/node_modules
+/apps/web/dist
+/apps/app/dist
+/apps/api/dist
