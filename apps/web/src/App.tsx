@@ -54,14 +54,14 @@ export function App() {
       const now = Date.now();
       const lookaheadMs = 60 * 1000;
 
-      schedule.forEach((item) => {
+      await Promise.all(schedule.map(async (item) => {
         const nextAtMs = new Date(item.nextAt).getTime();
         const isDueSoon = nextAtMs >= now && nextAtMs <= now + lookaheadMs;
 
         if (isDueSoon) {
-          notifyReminder(item);
+          await notifyReminder(item);
         }
-      });
+      }));
     }
 
     void checkDueReminders();

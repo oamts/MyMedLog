@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-12
-- Title: Add reminder/alert deduplication (`trigger_id` strategy)
+- Task ID: T-13
+- Title: Add offline-first behavior checks across core flows
 - Status: in_progress
-- Why this task now: expiration alert generation is implemented; next step is durable deduplication across app restarts.
+- Why this task now: deduplication is now persisted locally; next step is verifying offline-first behavior across end-to-end flows.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -42,19 +42,22 @@
 - Added expiration alert configuration to shared contracts with single/multiple validation rules.
 - Added expiration alert schedule engine with tests.
 - Integrated expiration alerts into merged local reminder schedule and notification payload handling.
+- Added persistent trigger deduplication store in IndexedDB (`deliveredTriggers`).
+- Notification dispatch now checks persisted trigger IDs before emitting and records successful deliveries.
+- Added trigger retention pruning to prevent unbounded dedupe storage growth.
 
 ## Last Completed
-- Task ID: T-11
-- Result: Expiration alerts implemented for single and multiple modes with optional enablement.
+- Task ID: T-12
+- Result: Reminder/alert dedupe (`trigger_id`) implemented with persistence across reload/restart.
 - Evidence:
-  - `packages/contracts/src/index.ts`
-  - `apps/web/src/domain/reminders/expiration.ts`
-  - `apps/web/src/domain/reminders/expiration.test.ts`
+  - `apps/web/src/services/db.ts`
+  - `apps/web/src/services/notifications.ts`
+  - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Persist delivered `trigger_id` values in local storage and consult them before notification dispatch.
-- Expected output: Reminder and expiration alerts are deduplicated across reload/restart, not only in current session.
-- Definition of done for next step: T-12 marked `done` with storage-backed dedupe and tests.
+- Action to execute next: Execute offline-first manual checks (create/edit/delete offline, reload offline, reminder evaluation without API).
+- Expected output: Documented pass/fail results for core offline flows with identified gaps.
+- Definition of done for next step: T-13 marked `done` with reproducible offline QA checklist evidence.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

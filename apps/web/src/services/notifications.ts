@@ -1,3 +1,9 @@
+import {
+  hasDeliveredTriggerLocal,
+  markDeliveredTriggerLocal,
+  pruneDeliveredTriggersLocal
+} from "./db";
+
 export type NotificationPermissionState = NotificationPermission | "unsupported";
 
 type ReminderNotificationPayload = {
@@ -9,7 +15,7 @@ type ReminderNotificationPayload = {
 
 const emittedTriggerIds = new Set<string>();
 
-function toTriggerId(payload: ReminderNotificationPayload): string {
+export function toTriggerId(payload: ReminderNotificationPayload): string {
   return `${payload.medicineId}:${payload.mode}:${payload.nextAt}`;
 }
 
@@ -29,7 +35,7 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
   return window.Notification.requestPermission();
 }
 
-export function notifyReminder(payload: ReminderNotificationPayload): boolean {
+export async function notifyReminder(payload: ReminderNotificationPayload): Promise<boolean> {
   if (typeof window === "undefined" || !("Notification" in window)) {
     return false;
   }
@@ -39,9 +45,11 @@ export function notifyReminder(payload: ReminderNotificationPayload): boolean {
   }
 
   const triggerId = toTriggerId(payload);
-  if (emittedTriggerIds.has(triggerId)) {
+  if (emittedTriggerIds.has(triggerId) || (await hasDeliveredTriggerLocal(triggerId))) {
     return false;
   }
+
+  await pruneDeliveredTriggersLocal();
 
   new window.Notification(`Hora do remedio: ${payload.medicineName}`, {
     body:
@@ -52,5 +60,6 @@ export function notifyReminder(payload: ReminderNotificationPayload): boolean {
   });
 
   emittedTriggerIds.add(triggerId);
+  await markDeliveredTriggerLocal(triggerId);
   return true;
 }
