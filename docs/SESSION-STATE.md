@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-08
-- Title: Implement fixed-time reminder engine
+- Task ID: T-09
+- Title: Implement interval reminder engine (6h/8h/12h)
 - Status: in_progress
-- Why this task now: local CRUD is complete and reminder scheduling is the next core capability.
+- Why this task now: fixed-time reminder foundation is complete; interval cadence is the next supported schedule type.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -29,18 +29,23 @@
 - Added IndexedDB local repository using Dexie in `apps/web/src/services/db.ts`.
 - Added local create/list flow in UI, persisting medicine before optional API sync call.
 - Added local update/delete repository functions and wired full CRUD controls in UI.
+- Added fixed-time reminder domain logic in `apps/web/src/domain/reminders/fixedTime.ts`.
+- Added unit tests for fixed-time scheduling behavior in `apps/web/src/domain/reminders/fixedTime.test.ts`.
+- Added reminder integration entrypoint `apps/web/src/services/reminderEngine.ts` for local schedule queries.
+- Reminder calculations currently use device local timezone for MVP.
 
 ## Last Completed
-- Task ID: T-07
-- Result: Full local CRUD flow available in UI (create, list, edit, delete).
+- Task ID: T-08
+- Result: Fixed-time reminder engine implemented with test coverage and integration entrypoint.
 - Evidence:
-  - `apps/web/src/services/db.ts`
-  - `apps/web/src/App.tsx`
+  - `apps/web/src/domain/reminders/fixedTime.ts`
+  - `apps/web/src/domain/reminders/fixedTime.test.ts`
+  - `apps/web/src/services/reminderEngine.ts`
 
 ## Next Exact Step
-- Action to execute next: Build fixed-time reminder scheduling module from medicine `reminder.times` data.
-- Expected output: Deterministic function that resolves next due reminder timestamp for each active medicine.
-- Definition of done for next step: T-08 marked `done` with unit-testable scheduling logic and integration entrypoint.
+- Action to execute next: Implement interval scheduling (`everyHours` in 6/8/12) using local timezone anchors.
+- Expected output: Deterministic next-trigger calculation for interval-based medicines.
+- Definition of done for next step: T-09 marked `done` with unit tests covering rollover and anchor-time behavior.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

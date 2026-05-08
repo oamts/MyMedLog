@@ -16,7 +16,7 @@ Status legend:
 - `T-05` Implement medicine data model + validations — `done`
 - `T-06` Implement local persistence (IndexedDB repository) — `done`
 - `T-07` Build medicine CRUD UI (create/edit/list/delete) — `done`
-- `T-08` Implement fixed-time reminder engine — `todo`
+- `T-08` Implement fixed-time reminder engine — `done`
 - `T-09` Implement interval reminder engine (6h/8h/12h) — `todo`
 - `T-10` Implement notification delivery + permission handling — `todo`
 - `T-11` Implement expiration alerts (single + multiple) — `todo`
