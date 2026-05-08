@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-09
-- Title: Implement interval reminder engine (6h/8h/12h)
+- Task ID: T-10
+- Title: Implement notification delivery + permission handling
 - Status: in_progress
-- Why this task now: fixed-time reminder foundation is complete; interval cadence is the next supported schedule type.
+- Why this task now: both fixed-time and interval scheduling are implemented, so notification delivery can now consume real schedules.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -33,19 +33,22 @@
 - Added unit tests for fixed-time scheduling behavior in `apps/web/src/domain/reminders/fixedTime.test.ts`.
 - Added reminder integration entrypoint `apps/web/src/services/reminderEngine.ts` for local schedule queries.
 - Reminder calculations currently use device local timezone for MVP.
+- Added interval reminder domain logic in `apps/web/src/domain/reminders/interval.ts`.
+- Added unit tests for interval scheduling behavior in `apps/web/src/domain/reminders/interval.test.ts`.
+- Expanded reminder integration to expose fixed, interval, and merged local schedules.
 
 ## Last Completed
-- Task ID: T-08
-- Result: Fixed-time reminder engine implemented with test coverage and integration entrypoint.
+- Task ID: T-09
+- Result: Interval reminder engine (6h/8h/12h) implemented with test coverage and merged schedule integration.
 - Evidence:
-  - `apps/web/src/domain/reminders/fixedTime.ts`
-  - `apps/web/src/domain/reminders/fixedTime.test.ts`
+  - `apps/web/src/domain/reminders/interval.ts`
+  - `apps/web/src/domain/reminders/interval.test.ts`
   - `apps/web/src/services/reminderEngine.ts`
 
 ## Next Exact Step
-- Action to execute next: Implement interval scheduling (`everyHours` in 6/8/12) using local timezone anchors.
-- Expected output: Deterministic next-trigger calculation for interval-based medicines.
-- Definition of done for next step: T-09 marked `done` with unit tests covering rollover and anchor-time behavior.
+- Action to execute next: Build notification adapter for permission flow and trigger dispatch from reminder schedule results.
+- Expected output: Service that requests permission, reports permission state, and emits local notifications for due reminders.
+- Definition of done for next step: T-10 marked `done` with permission handling and notification dispatch wired to schedule engine outputs.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed
