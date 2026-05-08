@@ -8,6 +8,12 @@ function buildIntervalMedicine(everyHours: 6 | 8 | 12, startsAt: string): Medici
     name: `Med ${everyHours}h`,
     expiresOn: undefined,
     notes: undefined,
+    expirationAlert: {
+      enabled: false,
+      mode: "single",
+      daysBefore: [30],
+      includeOnExpirationDay: true
+    },
     reminder: {
       type: "interval_hours",
       everyHours,

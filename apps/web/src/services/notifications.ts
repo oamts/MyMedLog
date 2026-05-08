@@ -4,7 +4,7 @@ type ReminderNotificationPayload = {
   medicineId: string;
   medicineName: string;
   nextAt: string;
-  mode: "fixed_time" | "interval_hours";
+  mode: "fixed_time" | "interval_hours" | "expiration_alert";
 };
 
 const emittedTriggerIds = new Set<string>();
@@ -44,7 +44,10 @@ export function notifyReminder(payload: ReminderNotificationPayload): boolean {
   }
 
   new window.Notification(`Hora do remedio: ${payload.medicineName}`, {
-    body: `Lembrete ${payload.mode === "fixed_time" ? "por horario" : "por intervalo"} previsto para ${new Date(payload.nextAt).toLocaleTimeString()}`,
+    body:
+      payload.mode === "expiration_alert"
+        ? `Alerta de validade previsto para ${new Date(payload.nextAt).toLocaleDateString()}`
+        : `Lembrete ${payload.mode === "fixed_time" ? "por horario" : "por intervalo"} previsto para ${new Date(payload.nextAt).toLocaleTimeString()}`,
     tag: triggerId
   });
 

@@ -19,7 +19,7 @@ Status legend:
 - `T-08` Implement fixed-time reminder engine — `done`
 - `T-09` Implement interval reminder engine (6h/8h/12h) — `done`
 - `T-10` Implement notification delivery + permission handling — `done`
-- `T-11` Implement expiration alerts (single + multiple) — `todo`
+- `T-11` Implement expiration alerts (single + multiple) — `done`
 - `T-12` Add reminder/alert deduplication (`trigger_id` strategy) — `todo`
 - `T-13` Add offline-first behavior checks across core flows — `todo`
 - `T-14` Implement sync queue foundation (enqueue + persistence) — `todo`

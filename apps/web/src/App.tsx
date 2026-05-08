@@ -26,7 +26,11 @@ const EMPTY_FORM_VALUES: MedicineFormValues = {
   name: "",
   expiresOn: "",
   time: "08:00",
-  notes: ""
+  notes: "",
+  expirationAlertEnabled: false,
+  expirationAlertMode: "single",
+  expirationDaysBefore: "30",
+  includeOnExpirationDay: true
 };
 
 export function App() {
@@ -80,6 +84,15 @@ export function App() {
     setLocalSaveMessage(null);
 
     const payload: MedicineInput = {
+      expirationAlert: {
+        enabled: values.expirationAlertEnabled,
+        mode: values.expirationAlertMode,
+        daysBefore: values.expirationDaysBefore
+          .split(",")
+          .map((item) => Number(item.trim()))
+          .filter((item) => Number.isInteger(item) && item >= 0),
+        includeOnExpirationDay: values.includeOnExpirationDay
+      },
       name: values.name,
       expiresOn: values.expiresOn || undefined,
       notes: values.notes || undefined,
@@ -123,7 +136,11 @@ export function App() {
       name: medicine.name,
       expiresOn: medicine.expiresOn ?? "",
       time: medicine.reminder.type === "fixed_time" ? medicine.reminder.times[0] ?? "08:00" : "08:00",
-      notes: medicine.notes ?? ""
+      notes: medicine.notes ?? "",
+      expirationAlertEnabled: medicine.expirationAlert.enabled,
+      expirationAlertMode: medicine.expirationAlert.mode,
+      expirationDaysBefore: medicine.expirationAlert.daysBefore.join(","),
+      includeOnExpirationDay: medicine.expirationAlert.includeOnExpirationDay
     });
     setValidationError(null);
     setLocalSaveMessage(`Editando: ${medicine.name}`);

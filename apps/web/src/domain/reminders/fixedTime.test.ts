@@ -8,6 +8,12 @@ function buildMedicine(times: string[]): Medicine {
     name: "Dipirona",
     expiresOn: undefined,
     notes: undefined,
+    expirationAlert: {
+      enabled: false,
+      mode: "single",
+      daysBefore: [30],
+      includeOnExpirationDay: true
+    },
     reminder: {
       type: "fixed_time",
       times

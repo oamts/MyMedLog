@@ -1,6 +1,7 @@
 import { listMedicinesLocal } from "./db";
 import { getUpcomingFixedReminders } from "../domain/reminders/fixedTime";
 import { getUpcomingIntervalReminders } from "../domain/reminders/interval";
+import { getUpcomingExpirationAlerts } from "../domain/reminders/expiration";
 
 export async function getLocalFixedReminderSchedule(now: Date = new Date()) {
   const medicines = await listMedicinesLocal();
@@ -22,6 +23,12 @@ export async function getLocalReminderSchedule(now: Date = new Date()) {
     ...item,
     mode: "interval_hours" as const
   }));
+  const expiration = getUpcomingExpirationAlerts(medicines, now).map((item) => ({
+    medicineId: item.medicineId,
+    medicineName: item.medicineName,
+    nextAt: item.nextAt,
+    mode: "expiration_alert" as const
+  }));
 
-  return [...fixed, ...interval].sort((a, b) => a.nextAt.localeCompare(b.nextAt));
+  return [...fixed, ...interval, ...expiration].sort((a, b) => a.nextAt.localeCompare(b.nextAt));
 }
