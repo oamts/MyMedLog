@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-07
-- Title: Build medicine CRUD UI (create/edit/list/delete)
+- Task ID: T-08
+- Title: Implement fixed-time reminder engine
 - Status: in_progress
-- Why this task now: contracts and local repository are ready, enabling UI flows over IndexedDB.
+- Why this task now: local CRUD is complete and reminder scheduling is the next core capability.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -28,18 +28,19 @@
 - Monorepo typecheck passes after contract changes.
 - Added IndexedDB local repository using Dexie in `apps/web/src/services/db.ts`.
 - Added local create/list flow in UI, persisting medicine before optional API sync call.
+- Added local update/delete repository functions and wired full CRUD controls in UI.
 
 ## Last Completed
-- Task ID: T-06
-- Result: Local persistence implemented with IndexedDB repository and wired to creation flow.
+- Task ID: T-07
+- Result: Full local CRUD flow available in UI (create, list, edit, delete).
 - Evidence:
   - `apps/web/src/services/db.ts`
   - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Expand UI from create+list to full CRUD (edit/delete) over local IndexedDB data.
-- Expected output: User can create, edit, and delete medicines locally with immediate list updates.
-- Definition of done for next step: T-07 marked `done` with CRUD actions functional against local repository.
+- Action to execute next: Build fixed-time reminder scheduling module from medicine `reminder.times` data.
+- Expected output: Deterministic function that resolves next due reminder timestamp for each active medicine.
+- Definition of done for next step: T-08 marked `done` with unit-testable scheduling logic and integration entrypoint.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

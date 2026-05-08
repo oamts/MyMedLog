@@ -5,7 +5,22 @@ import {
   type MedicineInput
 } from "@mymedlog/contracts";
 import { useCreateMedicineMutation, useGetHealthQuery } from "./services/api";
-import { createMedicineLocal, listMedicinesLocal } from "./services/db";
+import { HealthStatus } from "./components/HealthStatus";
+import { MedicineForm, type MedicineFormValues } from "./components/MedicineForm";
+import { MedicineList } from "./components/MedicineList";
+import {
+  createMedicineLocal,
+  deleteMedicineLocal,
+  listMedicinesLocal,
+  updateMedicineLocal
+} from "./services/db";
+
+const EMPTY_FORM_VALUES: MedicineFormValues = {
+  name: "",
+  expiresOn: "",
+  time: "08:00",
+  notes: ""
+};
 
 export function App() {
   const { data, isLoading, isError } = useGetHealthQuery();
@@ -13,23 +28,24 @@ export function App() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [localSaveMessage, setLocalSaveMessage] = useState<string | null>(null);
   const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
+  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
+  const [formValues, setFormValues] = useState<MedicineFormValues>(EMPTY_FORM_VALUES);
 
   useEffect(() => {
     void listMedicinesLocal().then(setLocalMedicines);
   }, []);
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function onSubmit(values: MedicineFormValues) {
     setValidationError(null);
+    setLocalSaveMessage(null);
 
-    const formData = new FormData(event.currentTarget);
     const payload: MedicineInput = {
-      name: String(formData.get("name") ?? ""),
-      expiresOn: String(formData.get("expiresOn") ?? "") || undefined,
-      notes: String(formData.get("notes") ?? "") || undefined,
+      name: values.name,
+      expiresOn: values.expiresOn || undefined,
+      notes: values.notes || undefined,
       reminder: {
         type: "fixed_time",
-        times: [String(formData.get("time") ?? "08:00")]
+        times: [values.time]
       }
     };
 
@@ -40,16 +56,46 @@ export function App() {
     }
 
     try {
-      const localMedicine = await createMedicineLocal(parsed.data);
-      setLocalSaveMessage(`Salvo localmente: ${localMedicine.name}`);
+      const localMedicine = editingMedicine
+        ? await updateMedicineLocal(editingMedicine.id, parsed.data)
+        : await createMedicineLocal(parsed.data);
+      setLocalSaveMessage(
+        editingMedicine
+          ? `Atualizado localmente: ${localMedicine.name}`
+          : `Salvo localmente: ${localMedicine.name}`
+      );
       setLocalMedicines(await listMedicinesLocal());
     } catch (error) {
       setValidationError(error instanceof Error ? error.message : "Erro ao salvar localmente");
       return;
     }
 
-    await createMedicine(parsed.data).catch(() => null);
-    event.currentTarget.reset();
+    if (!editingMedicine) {
+      await createMedicine(parsed.data).catch(() => null);
+    }
+    setEditingMedicine(null);
+    setFormValues(EMPTY_FORM_VALUES);
+  }
+
+  function startEdit(medicine: Medicine) {
+    setEditingMedicine(medicine);
+    setFormValues({
+      name: medicine.name,
+      expiresOn: medicine.expiresOn ?? "",
+      time: medicine.reminder.type === "fixed_time" ? medicine.reminder.times[0] ?? "08:00" : "08:00",
+      notes: medicine.notes ?? ""
+    });
+    setValidationError(null);
+    setLocalSaveMessage(`Editando: ${medicine.name}`);
+  }
+
+  async function removeMedicine(id: string) {
+    await deleteMedicineLocal(id);
+    setLocalMedicines(await listMedicinesLocal());
+    if (editingMedicine?.id === id) {
+      setEditingMedicine(null);
+      setFormValues(EMPTY_FORM_VALUES);
+    }
   }
 
   return (
@@ -79,23 +125,14 @@ export function App() {
         <p style={{ marginBottom: "1.25rem" }}>
           Scaffold inicial concluido. Frontend conectado ao endpoint de health da API.
         </p>
-        {isLoading && <p>Verificando API...</p>}
-        {isError && <p>API indisponivel no momento.</p>}
-        {data && (
-          <p>
-            API status: <strong>{data.status}</strong> ({data.service}) em {data.timestamp}
-          </p>
-        )}
+        <HealthStatus isLoading={isLoading} isError={isError} data={data} />
         <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
-        <form onSubmit={onSubmit} style={{ display: "grid", gap: "0.75rem" }}>
-          <input name="name" placeholder="Nome do medicamento" required />
-          <input name="expiresOn" type="date" />
-          <input name="time" type="time" defaultValue="08:00" required />
-          <input name="notes" placeholder="Observacoes (opcional)" />
-          <button type="submit" disabled={createState.isLoading}>
-            {createState.isLoading ? "Salvando..." : "Salvar medicamento"}
-          </button>
-        </form>
+        <MedicineForm
+          initialValues={formValues}
+          isSubmitting={createState.isLoading}
+          isEditing={Boolean(editingMedicine)}
+          onSubmit={onSubmit}
+        />
         {validationError && <p style={{ color: "#b91c1c" }}>{validationError}</p>}
         {localSaveMessage && <p style={{ color: "#065f46" }}>{localSaveMessage}</p>}
         {createState.isError && <p style={{ color: "#b91c1c" }}>Falha ao salvar medicamento.</p>}
@@ -107,12 +144,13 @@ export function App() {
         <h2 style={{ marginTop: "1.5rem", marginBottom: "0.5rem", fontSize: "1.1rem" }}>
           Medicamentos locais
         </h2>
-        {localMedicines.length === 0 && <p>Nenhum medicamento salvo localmente.</p>}
-        {localMedicines.map((medicine) => (
-          <p key={medicine.id} style={{ margin: "0.25rem 0" }}>
-            <strong>{medicine.name}</strong> — validade {medicine.expiresOn ?? "nao informada"}
-          </p>
-        ))}
+        <MedicineList
+          medicines={localMedicines}
+          onEdit={startEdit}
+          onDelete={(id) => {
+            void removeMedicine(id);
+          }}
+        />
       </section>
     </main>
   );

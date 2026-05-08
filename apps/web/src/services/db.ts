@@ -35,3 +35,32 @@ export async function createMedicineLocal(input: MedicineInput): Promise<Medicin
 export async function listMedicinesLocal(): Promise<Medicine[]> {
   return db.medicines.orderBy("updatedAt").reverse().toArray();
 }
+
+export async function updateMedicineLocal(
+  id: string,
+  input: MedicineInput
+): Promise<Medicine> {
+  const existing = await db.medicines.get(id);
+  if (!existing) {
+    throw new Error("Medicine not found");
+  }
+
+  const candidate: Medicine = {
+    ...existing,
+    ...input,
+    id,
+    updatedAt: new Date().toISOString()
+  };
+
+  const parsed = medicineSchema.safeParse(candidate);
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Invalid medicine payload");
+  }
+
+  await db.medicines.put(parsed.data);
+  return parsed.data;
+}
+
+export async function deleteMedicineLocal(id: string): Promise<void> {
+  await db.medicines.delete(id);
+}
