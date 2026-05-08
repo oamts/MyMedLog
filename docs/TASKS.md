@@ -18,7 +18,7 @@ Status legend:
 - `T-07` Build medicine CRUD UI (create/edit/list/delete) — `done`
 - `T-08` Implement fixed-time reminder engine — `done`
 - `T-09` Implement interval reminder engine (6h/8h/12h) — `done`
-- `T-10` Implement notification delivery + permission handling — `todo`
+- `T-10` Implement notification delivery + permission handling — `done`
 - `T-11` Implement expiration alerts (single + multiple) — `todo`
 - `T-12` Add reminder/alert deduplication (`trigger_id` strategy) — `todo`
 - `T-13` Add offline-first behavior checks across core flows — `todo`

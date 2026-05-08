@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-10
-- Title: Implement notification delivery + permission handling
+- Task ID: T-11
+- Title: Implement expiration alerts (single + multiple)
 - Status: in_progress
-- Why this task now: both fixed-time and interval scheduling are implemented, so notification delivery can now consume real schedules.
+- Why this task now: reminder scheduling + notification permission flow are in place, enabling expiration alert logic on top.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -36,19 +36,22 @@
 - Added interval reminder domain logic in `apps/web/src/domain/reminders/interval.ts`.
 - Added unit tests for interval scheduling behavior in `apps/web/src/domain/reminders/interval.test.ts`.
 - Expanded reminder integration to expose fixed, interval, and merged local schedules.
+- Added notification adapter in `apps/web/src/services/notifications.ts` with permission handling and in-session dedupe.
+- Added foreground reminder polling in `apps/web/src/App.tsx` to dispatch local notifications for due reminders.
+- Added notification permission status and enable action in UI.
 
 ## Last Completed
-- Task ID: T-09
-- Result: Interval reminder engine (6h/8h/12h) implemented with test coverage and merged schedule integration.
+- Task ID: T-10
+- Result: Notification delivery and permission flow wired to reminder schedules in foreground runtime.
 - Evidence:
-  - `apps/web/src/domain/reminders/interval.ts`
-  - `apps/web/src/domain/reminders/interval.test.ts`
+  - `apps/web/src/services/notifications.ts`
   - `apps/web/src/services/reminderEngine.ts`
+  - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Build notification adapter for permission flow and trigger dispatch from reminder schedule results.
-- Expected output: Service that requests permission, reports permission state, and emits local notifications for due reminders.
-- Definition of done for next step: T-10 marked `done` with permission handling and notification dispatch wired to schedule engine outputs.
+- Action to execute next: Implement expiration alert rules for single and multiple lead times relative to medicine `expiresOn`.
+- Expected output: Deterministic expiration alert schedule generation for medicines with optional validity date.
+- Definition of done for next step: T-11 marked `done` with unit tests for single/multiple alert modes.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

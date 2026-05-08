@@ -9,6 +9,13 @@ import { HealthStatus } from "./components/HealthStatus";
 import { MedicineForm, type MedicineFormValues } from "./components/MedicineForm";
 import { MedicineList } from "./components/MedicineList";
 import {
+  getNotificationPermissionState,
+  requestNotificationPermission,
+  notifyReminder,
+  type NotificationPermissionState
+} from "./services/notifications";
+import { getLocalReminderSchedule } from "./services/reminderEngine";
+import {
   createMedicineLocal,
   deleteMedicineLocal,
   listMedicinesLocal,
@@ -30,10 +37,43 @@ export function App() {
   const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
   const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [formValues, setFormValues] = useState<MedicineFormValues>(EMPTY_FORM_VALUES);
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermissionState>(getNotificationPermissionState());
 
   useEffect(() => {
     void listMedicinesLocal().then(setLocalMedicines);
   }, []);
+
+  useEffect(() => {
+    async function checkDueReminders() {
+      const schedule = await getLocalReminderSchedule();
+      const now = Date.now();
+      const lookaheadMs = 60 * 1000;
+
+      schedule.forEach((item) => {
+        const nextAtMs = new Date(item.nextAt).getTime();
+        const isDueSoon = nextAtMs >= now && nextAtMs <= now + lookaheadMs;
+
+        if (isDueSoon) {
+          notifyReminder(item);
+        }
+      });
+    }
+
+    void checkDueReminders();
+    const timerId = window.setInterval(() => {
+      void checkDueReminders();
+    }, 60 * 1000);
+
+    return () => {
+      window.clearInterval(timerId);
+    };
+  }, []);
+
+  async function enableNotifications() {
+    const permission = await requestNotificationPermission();
+    setNotificationPermission(permission);
+  }
 
   async function onSubmit(values: MedicineFormValues) {
     setValidationError(null);
@@ -125,6 +165,20 @@ export function App() {
         <p style={{ marginBottom: "1.25rem" }}>
           Scaffold inicial concluido. Frontend conectado ao endpoint de health da API.
         </p>
+        <div style={{ marginBottom: "0.75rem" }}>
+          <p style={{ marginTop: 0, marginBottom: "0.4rem" }}>
+            Permissao de notificacao: <strong>{notificationPermission}</strong>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              void enableNotifications();
+            }}
+            disabled={notificationPermission === "granted" || notificationPermission === "unsupported"}
+          >
+            Ativar notificacoes
+          </button>
+        </div>
         <HealthStatus isLoading={isLoading} isError={isError} data={data} />
         <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
         <MedicineForm
