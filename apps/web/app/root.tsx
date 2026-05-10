@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import { Provider } from "react-redux";
-import { store } from "../src/store";
-import "../src/pwa";
+import { store } from "./store";
+import "./pwa";
 
 export default function Root() {
   return (
