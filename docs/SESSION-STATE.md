@@ -12,9 +12,9 @@
 
 ## Current Task
 - Task ID: T-14
-- Title: Implement sync queue foundation (enqueue + persistence)
+- Title: Implement manual sync foundation (`Save data` + `Load data`)
 - Status: in_progress
-- Why this task now: offline-first QA is complete for current scope; the next milestone is queueing local mutations for future sync.
+- Why this task now: offline-first QA is complete and sync was simplified to explicit user-driven actions.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -49,6 +49,8 @@
 - Completed automated offline baseline (`test`, `typecheck`, `build`) with all checks passing.
 - Executed manual offline QA checklist with all mandatory scenarios marked PASS.
 - Fixed reminder due-window tolerance to include short late window and validated notification + dedupe behavior.
+- Product decision: keep offline-first writes and sync only on explicit actions (`Save data` and `Load data`).
+- Product decision: `Save data` overwrites backend; `Load data` overwrites local and clears pending changes.
 
 ## Last Completed
 - Task ID: T-13
@@ -58,9 +60,9 @@
   - `apps/web/src/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Add local sync queue store and enqueue operations on create/update/delete medicine mutations.
-- Expected output: Durable pending operations persisted locally for future replay when backend/connectivity is available.
-- Definition of done for next step: T-14 marked `done` with queue write/read helpers and medicine mutation integration.
+- Action to execute next: Implement backend snapshot endpoints and web sync service with manual `Save data`/`Load data` actions.
+- Expected output: Deterministic full-replacement sync behavior with pending-change tracking and clear UI feedback.
+- Definition of done for next step: T-14 marked `done` with successful manual save/load flow and pending-state reset rules.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

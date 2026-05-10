@@ -18,11 +18,9 @@ Required MVP fields:
 - `schedule_type_and_times`
 
 Extended operational fields (recommended in MVP foundation):
-- `is_active`
 - `created_at`
 - `updated_at`
-- `deleted_at` (nullable; soft delete for sync safety)
-- `version` (monotonic integer for optimistic conflict checks)
+- `sync_status` (`synced` | `pending`)
 
 ### 2.2 ReminderSchedule
 
@@ -60,11 +58,9 @@ export interface Medicine {
   expiration_date?: string // YYYY-MM-DD
   schedule_type_and_times: ReminderSchedule
   expiration_alert_config: ExpirationAlertConfig
-  is_active: boolean
   created_at: string // ISO 8601
   updated_at: string // ISO 8601
-  deleted_at: string | null // ISO 8601
-  version: number
+  sync_status: 'synced' | 'pending'
 }
 
 export interface ReminderSchedule {
@@ -91,8 +87,7 @@ export interface ExpirationAlertConfig {
 ### 4.1 Medicine
 - `name`: required, trimmed, 1..120 chars.
 - `expiration_date`: optional; when present, valid date in `YYYY-MM-DD`.
-- `is_active`: default `true`.
-- `version`: starts at `1`, increments on each mutation.
+- `sync_status`: default `pending` after local mutation; set to `synced` after successful `Save data`.
 
 ### 4.2 ReminderSchedule
 - `schedule_type = fixed_times`:
@@ -119,26 +114,19 @@ export interface ExpirationAlertConfig {
 Recommended object stores:
 - `medicines`
   - keyPath: `id`
-  - indexes: `is_active`, `expiration_date`, `updated_at`
-- `sync_queue` (future-ready foundation)
-  - keyPath: `op_id`
-  - indexes: `status`, `created_at`, `entity_type`
+  - indexes: `expiration_date`, `updated_at`, `sync_status`
+- `sync_meta`
+  - keyPath: `id` (single record)
+  - stores pending-change flag and last manual sync timestamps
 
-Recommended `sync_queue` shape:
+Recommended `sync_meta` shape:
 
 ```ts
-export interface SyncQueueOperation {
-  op_id: UUID
-  entity_type: 'medicine'
-  entity_id: UUID
-  operation: 'create' | 'update' | 'delete'
-  payload: unknown
-  base_version: number
-  status: 'pending' | 'processing' | 'failed'
-  retry_count: number
-  last_error: string | null
-  created_at: string
-  updated_at: string
+export interface SyncMeta {
+  id: 'sync-meta'
+  has_pending_changes: boolean
+  last_manual_save_at: string | null
+  last_manual_load_at: string | null
 }
 ```
 
@@ -151,9 +139,8 @@ export interface SyncQueueOperation {
 
 ## 7. Delete Strategy
 
-- Use soft delete first (`deleted_at != null`, `is_active = false`).
-- Keep deleted records for future sync reconciliation.
-- Physical purge can be implemented later with retention policy.
+- Use physical delete in local store for MVP simplicity.
+- Deletion is propagated to backend only when user clicks `Save data`.
 
 ## 8. Migration Strategy (Early)
 
@@ -171,4 +158,4 @@ export interface SyncQueueOperation {
 ## 10. Open Follow-ups
 
 1. Exact reminder trigger algorithm and edge cases: `docs/04-notification-and-reminder-rules.md`
-2. Conflict policy details for `version` and queue replay: `docs/05-offline-and-sync-strategy.md`
+2. Manual snapshot save/load UX and failure handling details: `docs/05-offline-and-sync-strategy.md`

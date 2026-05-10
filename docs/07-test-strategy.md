@@ -31,7 +31,7 @@ Success criteria:
 Targets:
 - Application use cases + local repository (IndexedDB adapter).
 - Reminder engine + trigger persistence.
-- Sync queue lifecycle (enqueue/process/retry/failure paths).
+- Manual sync lifecycle (`Save data`/`Load data`, success/failure paths).
 - Permission state handling and fallback behavior orchestration.
 
 Success criteria:
@@ -85,10 +85,10 @@ Lower risk:
 ## 7. Offline and Sync Test Scenarios
 
 1. Create/edit/delete while offline.
-2. Restart app with pending queue.
-3. Backend unavailable then available again.
-4. Retryable vs non-retryable failure handling.
-5. Queue coalescing correctness (`create+update`, `create+delete`, etc.).
+2. Restart app with pending local changes.
+3. Manual `Save data` success path (backend overwrite).
+4. Manual `Save data` failure path (pending preserved).
+5. Manual `Load data` success path (local overwrite + pending clear).
 6. Sync state indicator transitions.
 
 ## 8. Notification Behavior Validation

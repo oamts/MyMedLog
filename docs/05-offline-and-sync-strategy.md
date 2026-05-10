@@ -2,199 +2,102 @@
 
 ## 1. Purpose
 
-Define a local-first strategy that keeps the app fully usable without backend availability, while preparing reliable automatic synchronization for later phases.
+Define a simple offline-first strategy where local data is always written first and backend sync happens only through explicit user actions.
 
 ## 2. Core Principles
 
 1. Local-first source of truth
-- All user actions are committed locally first.
-- UI never depends on backend round-trip to confirm local operations.
+- All CRUD writes are committed locally first.
+- Core UX never depends on backend availability.
 
-2. Eventual consistency
-- Backend state may lag behind local state.
-- Sync converges automatically when connectivity and backend return.
+2. Manual sync only
+- `Save data` pushes local snapshot to backend.
+- `Load data` pulls backend snapshot and replaces local data.
 
-3. Durable operation log
-- Mutations are represented as queued operations with metadata.
-- Queue survives app restarts.
+3. Full replacement semantics
+- `Save data` overwrites backend with local snapshot.
+- `Load data` overwrites local store with backend snapshot.
 
-4. Non-blocking UX
-- Sync failures never block core actions (CRUD, reminders, reads).
+4. Fail-safe behavior
+- If `Save data` fails, local data and pending state are preserved.
+- If `Load data` fails, current local data is preserved.
 
-## 3. Offline Behavior Requirements
+## 3. Manual Sync Actions
 
-When offline or backend is unavailable:
-- Create/edit/delete medicine must work locally.
-- Reminder and expiration logic continues locally.
-- Sync operations are queued as `pending`.
-- User can keep using app normally.
+### 3.1 Save data
 
-When connection/backend returns:
-- Sync restarts automatically in background.
-- Pending operations are retried in order.
-- UI remains responsive during sync.
+1. Read full local medicines dataset.
+2. Send snapshot to backend endpoint.
+3. Backend replaces remote dataset with snapshot.
+4. On success:
+   - mark medicines as `synced`
+   - clear local pending-change metadata.
+5. On failure:
+   - stop immediately
+   - keep local pending state unchanged.
 
-## 4. Sync Queue Model
+### 3.2 Load data
 
-Each mutation generates one queue item.
+1. Fetch full medicines dataset from backend.
+2. Replace local medicines dataset completely.
+3. Clear local pending-change metadata.
+4. Mark local records as `synced`.
 
-Suggested operation shape:
+## 4. Backend Contract (MVP)
+
+- `GET /api/v1/medicines`
+  - returns full medicines list.
+- `PUT /api/v1/medicines/snapshot`
+  - receives full medicines list and replaces backend state.
+
+## 5. Local Sync Metadata
+
+Maintain minimal sync metadata:
 
 ```ts
-type SyncOperationType = 'create' | 'update' | 'delete'
-
-interface SyncQueueOperation {
-  op_id: string
-  entity_type: 'medicine'
-  entity_id: string
-  operation: SyncOperationType
-  payload: unknown
-  base_version: number
-  status: 'pending' | 'processing' | 'failed'
-  retry_count: number
-  last_error: string | null
-  created_at: string
-  updated_at: string
+interface SyncMeta {
+  id: 'sync-meta'
+  has_pending_changes: boolean
+  last_manual_save_at: string | null
+  last_manual_load_at: string | null
 }
 ```
 
-Queue invariants:
-- `op_id` is unique and immutable.
-- Operations for same entity preserve insertion order.
-- Failed operations remain recoverable.
-
-## 5. Sync Lifecycle
-
-1. Enqueue
-- On local mutation success, append operation as `pending`.
-
-2. Dispatch trigger
-- Attempt sync on:
-  - app startup
-  - app resume
-  - online event
-  - periodic retry timer
-
-3. Process
-- Mark next pending operation as `processing`.
-- Send to backend API.
-
-4. Resolve
-- Success: remove from queue (or mark done if audit retained).
-- Retryable failure: mark `failed`, increment `retry_count`, schedule backoff.
-- Non-retryable failure: mark `failed`, surface actionable message.
-
-5. Continue
-- Move to next operation until queue drains or stop condition occurs.
-
-## 6. Retry and Backoff Policy (MVP)
-
-- Exponential backoff with jitter.
-- Example delays: 5s, 15s, 45s, 120s, 300s (cap).
-- Reset backoff after successful operation.
-- Retry budget per op in MVP: high enough for transient local-backend outages (e.g., 20 attempts).
-
-Stop conditions:
-- explicit offline detection
-- repeated auth/config errors (future, when auth exists)
-- malformed payload (developer error)
-
-## 7. Conflict Strategy
-
-MVP conflict baseline:
-- Use `version` per medicine.
-- Queue operation carries `base_version`.
-
-Server-side expected behavior (future integration):
-- If `base_version` matches server version, apply and increment.
-- If mismatch, return conflict response.
-
-Client conflict policy (MVP-ready foundation):
-1. Fetch latest remote entity.
-2. Compare remote vs local.
-3. Apply deterministic policy:
-   - default: local wins for user-edited fields in personal single-user context
-   - preserve remote-only metadata fields
-4. Generate follow-up update operation with new base version.
-
-Rationale:
-- Single-user personal app minimizes multi-actor conflicts.
-- Deterministic policy avoids blocking user with manual merges in MVP.
-
-## 8. Operation Coalescing (Optimization)
-
-Before processing queue, apply safe coalescing rules per entity:
-- `create` + `update` => merge into single `create` payload
-- multiple `update` => keep latest merged `update`
-- `create` + `delete` before sync => drop both
-- `update` + `delete` => keep `delete`
-
-Benefits:
-- fewer backend calls
-- faster convergence after long offline usage
-
-## 9. Connectivity and Availability Detection
-
-Signals used together:
-- Browser online/offline events.
-- Lightweight backend health probe.
-
 Rules:
-- Consider sync "active" only when both internet and backend availability pass.
-- Avoid flapping with short stabilization window (e.g., 3-5 seconds).
+- Any local CRUD mutation sets `has_pending_changes = true`.
+- Successful `Save data` or `Load data` sets `has_pending_changes = false`.
 
-## 10. UX States for Sync (MVP)
+## 6. UX Requirements
 
-Expose simple status indicator:
-- `Synced`
-- `Pending changes`
-- `Syncing`
-- `Sync paused` (offline/backend unavailable)
-- `Sync error` (requires attention)
+- Show clear sync actions:
+  - `Save data`
+  - `Load data`
+- Show concise status:
+  - pending local changes
+  - last save/load result and timestamp
+- Never block local CRUD due to backend failure.
 
-UX requirements:
-- Never block medicine management due to sync state.
-- Show concise, non-intrusive status.
-- Keep details optional for diagnostics.
+## 7. Error Handling
 
-## 11. Data Safety and Recovery
+- Save failure:
+  - stop at first error
+  - keep pending local changes
+  - show error message.
+- Load failure:
+  - keep current local dataset untouched
+  - show error message.
 
-- Queue and medicines persist in IndexedDB.
-- App restart must restore pending queue.
-- Corrupted operation handling:
-  - isolate bad op
-  - continue others when safe
-  - log diagnostics
+## 8. Acceptance Criteria
 
-## 12. Observability for Sync
+1. Local CRUD works fully without backend.
+2. `Save data` overwrites backend with local snapshot.
+3. `Load data` overwrites local data with backend snapshot.
+4. Successful save/load clears pending local changes.
+5. Failed save/load does not corrupt local data.
 
-Track local metrics/events:
-- queue length over time
-- retry_count distribution
-- operation latency
-- failure reason categories
-- successful drain timestamp
+## 9. Out of Scope for This Phase
 
-Use logs to improve retry/conflict policy in post-MVP.
-
-## 13. Acceptance Criteria
-
-1. Local create/update/delete works with backend offline.
-2. Queue persists across app restart.
-3. Sync auto-retries when backend returns.
-4. Successful sync drains queue in order.
-5. Retryable failures do not block later app usage.
-6. Conflict response follows deterministic local-wins baseline.
-7. Sync state indicator reflects current lifecycle state.
-
-## 14. Out of Scope for MVP
-
-- End-to-end encrypted cloud backup.
-- Multi-device real-time merge UX.
-- User-configurable conflict policies.
-- Cross-entity transactional sync.
-
-## 15. Next Technical Follow-up
-
-- Map these rules into concrete API contracts in implementation phase.
-- Add integration tests with mocked intermittent backend.
+- Automatic background retry.
+- Operation-level replay queue.
+- Conflict resolution policies.
+- Multi-device merge behavior.

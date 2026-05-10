@@ -21,7 +21,7 @@ The system follows a layered architecture:
   - create/update/delete medicine
   - schedule reminders
   - compute expiration alerts
-  - enqueue sync operations
+  - execute manual save/load sync actions
 
 3. Domain Layer
 - Core entities and rules:
@@ -51,18 +51,19 @@ The system follows a layered architecture:
 ### 3.3 Local Data Store
 - Source of truth during MVP runtime.
 - Stores medicines and reminder configurations.
-- Stores future sync metadata (operation queue, timestamps, versions).
+- Stores minimal sync metadata (pending changes and last manual sync timestamps).
 
 ### 3.4 Reminder Engine
 - Resolves next trigger time for fixed schedules and intervals.
 - Recomputes triggers when medicine data changes.
 - Delegates notification display to notification adapter.
 
-### 3.5 Sync Engine (Foundation in MVP)
-- Persists outbound operations in a queue.
-- Detects online/backend availability.
-- Replays queued operations in order when available.
-- Conflict policy to be defined in `docs/05-offline-and-sync-strategy.md`.
+### 3.5 Manual Sync Service (MVP)
+- Persists local pending-change metadata.
+- Executes explicit user actions:
+  - `Save data`: sends local snapshot and overwrites backend.
+  - `Load data`: fetches backend snapshot and overwrites local store.
+- Clears pending metadata after successful save/load.
 
 ## 4. Data Flow (Core Scenarios)
 
@@ -71,18 +72,18 @@ The system follows a layered architecture:
 2. Application layer validates input using domain rules.
 3. Local store persists medicine.
 4. Reminder engine recalculates triggers.
-5. Sync operation is queued (future-ready).
+5. App marks pending local changes until user triggers manual save.
 
 ### 4.2 Reminder trigger
 1. Reminder engine determines due reminder.
 2. Notification adapter requests display through platform APIs.
 3. User receives notification with available sound/vibration behavior.
 
-### 4.3 Offline update with later sync
+### 4.3 Offline update with manual sync
 1. User edits medicine while offline.
 2. Local store writes immediately.
-3. Sync operation is queued with metadata.
-4. When connectivity/backend returns, sync engine retries automatically.
+3. Pending-change metadata is marked locally.
+4. User later clicks `Save data` to overwrite backend with current local snapshot.
 
 ## 5. Proposed Module Boundaries
 
@@ -118,8 +119,8 @@ Rationale:
 2. Domain logic pure and testable
 - Reduces risk in time-based reminder/expiration rules.
 
-3. Sync as append-only operations queue
-- Simplifies reliability and retry semantics.
+3. Sync as explicit manual snapshot actions
+- Simplifies MVP behavior and reduces conflict complexity.
 
 4. Progressive enhancement for background features
 - Uses best available browser/device capabilities with fallback behavior.

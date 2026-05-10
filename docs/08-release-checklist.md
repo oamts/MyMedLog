@@ -40,9 +40,10 @@ Required evidence:
 
 - App remains usable with internet disabled.
 - Data persists after app restart while offline.
-- Local mutations enqueue sync operations.
-- Sync status indicator reflects real state transitions.
-- Auto-retry starts when backend/connectivity returns.
+- Local mutations mark pending local changes.
+- `Save data` overwrites backend snapshot successfully.
+- `Load data` overwrites local snapshot successfully.
+- Pending state clears after successful save/load.
 
 ## 7. Android PWA Readiness
 
@@ -64,7 +65,7 @@ Required evidence:
 
 - IndexedDB schema version and migrations verified.
 - No data loss on normal restart/refresh.
-- Corrupted queue item handling does not block all processing.
+- Corrupted local sync metadata handling does not block core usage.
 - Soft-deleted medicines do not continue generating triggers.
 
 ## 10. Performance and Stability Sanity
@@ -112,5 +113,5 @@ No-Go if any are true:
 
 - Monitor first-run logs/errors.
 - Track reminder reliability incidents.
-- Review sync queue behavior under real intermittent backend conditions.
+- Review manual save/load behavior under real intermittent backend conditions.
 - Prioritize first stabilization patch if needed.

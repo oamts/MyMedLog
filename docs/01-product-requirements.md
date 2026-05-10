@@ -44,8 +44,9 @@ Permitir que o usuario:
 ### 3.5 Offline-first e sincronizacao futura
 - App deve funcionar localmente sem backend.
 - Dados e agendamentos devem permanecer utilizaveis offline.
-- Preparar base para sync futuro automatico quando conexao/backend estiver disponivel.
-- Prever botao de sincronizacao manual (futuro proximo).
+- Sincronizacao com backend sera manual por acao explicita do usuario.
+- Botao `Save data` envia snapshot completo local e sobrescreve backend.
+- Botao `Load data` carrega backend e sobrescreve dados locais, limpando pendencias locais.
 
 ## 4. Fora de Escopo do MVP (Out of Scope)
 
@@ -124,6 +125,16 @@ Permitir que o usuario:
 - Dado o MVP em execucao,
 - Quando o usuario abre o app,
 - Entao nao ha fluxo de autenticacao obrigatorio.
+
+### CA-09 Save data manual
+- Dado alteracoes locais pendentes,
+- Quando o usuario clica em `Save data`,
+- Entao o app envia snapshot completo local e sobrescreve o backend.
+
+### CA-10 Load data manual
+- Dado dados no backend,
+- Quando o usuario clica em `Load data`,
+- Entao o app substitui dados locais pelos dados do backend e limpa pendencias locais.
 
 ## 8. Restricoes Tecnicas Iniciais
 

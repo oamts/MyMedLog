@@ -90,18 +90,19 @@ Acceptance criteria:
 ## M4 — Offline Hardening and Sync Foundation
 
 Goals:
-- Add sync queue persistence and lifecycle processing foundation.
+- Add manual sync foundation with explicit save/load actions.
 - Keep user flows non-blocking under backend outages.
 
 Deliverables:
-- `sync_queue` local store.
-- Enqueue on local mutations.
-- Retry/backoff processor scaffold + sync status indicator.
+- Local pending-change metadata store.
+- `Save data` action: local snapshot overwrites backend.
+- `Load data` action: backend snapshot overwrites local.
+- Sync status indicator for pending/synced and last manual action.
 
 Acceptance criteria:
 - Local operations always succeed without backend.
-- Queue survives restart.
-- Auto-retry runs when connection/backend returns.
+- Pending state survives restart.
+- Manual save/load works deterministically with full replacement semantics.
 
 ## M5 — PWA Readiness and Release
 
@@ -133,7 +134,7 @@ Note: Timeline can be compressed/expanded based on test depth and platform behav
 - M1: repository + form validation unit/integration tests
 - M2: scheduler algorithm tests with deterministic clocks
 - M3: expiration calculation tests and dedupe tests
-- M4: queue lifecycle tests with simulated outages
+- M4: manual save/load sync tests with simulated outages
 - M5: smoke E2E + Android install/offline manual validation
 
 ## 7. Quality Gates (Go/No-Go)
