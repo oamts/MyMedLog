@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import {
+  medicinesSnapshotSchema,
   medicineInputSchema,
   type CreateMedicineResponse,
   type HealthResponse
@@ -104,6 +105,68 @@ app.post<{ Body: unknown; Reply: CreateMedicineResponse }>(
     medicines.push(medicine);
 
     return reply.status(201).send(medicine);
+  }
+);
+
+app.get<{ Reply: CreateMedicineResponse[] }>(
+  "/api/v1/medicines",
+  {
+    schema: {
+      summary: "List medicines",
+      tags: ["medicines"],
+      response: {
+        200: {
+          type: "array",
+          items: {
+            type: "object"
+          }
+        }
+      }
+    }
+  },
+  async () => medicines
+);
+
+app.put<{ Body: unknown; Reply: { status: "ok"; total: number } }>(
+  "/api/v1/medicines/snapshot",
+  {
+    schema: {
+      summary: "Replace medicines snapshot",
+      tags: ["medicines"],
+      body: {
+        type: "array",
+        items: {
+          type: "object"
+        }
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            status: { type: "string", const: "ok" },
+            total: { type: "number" }
+          },
+          required: ["status", "total"]
+        }
+      }
+    }
+  },
+  async (request, reply) => {
+    const parsed = medicinesSnapshotSchema.safeParse(request.body);
+
+    if (!parsed.success) {
+      return reply.status(400).send({
+        message: "Invalid medicines snapshot payload",
+        issues: parsed.error.issues
+      } as never);
+    }
+
+    medicines.splice(0, medicines.length, ...parsed.data);
+
+    return {
+      status: "ok",
+      total: medicines.length
+    };
   }
 );
 

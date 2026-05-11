@@ -80,3 +80,11 @@ export type Medicine = z.infer<typeof medicineSchema>;
 
 export type CreateMedicineRequest = MedicineInput;
 export type CreateMedicineResponse = Medicine;
+
+export const medicinesSnapshotSchema = z.array(medicineSchema);
+
+export type MedicinesSnapshotRequest = Medicine[];
+export type MedicinesSnapshotResponse = {
+  status: "ok";
+  total: number;
+};
