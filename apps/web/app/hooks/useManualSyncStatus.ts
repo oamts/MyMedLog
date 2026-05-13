@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { getSyncMetaLocal } from "../services/db";
 
-type SyncPhase = "idle" | "pending" | "saving" | "loading" | "synced" | "error";
+export type SyncPhase = "idle" | "pending" | "saving" | "loading" | "synced" | "error";
 
-type SyncStatusState = {
+export type SyncStatusState = {
   phase: SyncPhase;
   pendingChanges: boolean;
   lastManualSaveAt: string | null;

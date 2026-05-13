@@ -24,8 +24,8 @@ Status legend:
 - `T-13` Add offline-first behavior checks across core flows — `done`
 - `T-14` Implement manual sync foundation (`Save data` + `Load data`) — `done`
 - `T-15` Simplify pending-change metadata and sync status UX — `done`
-- `T-16` Add sync status indicator in UI — `in_progress`
-- `T-17` Write unit tests for domain rules (schedule/expiration/validation) — `todo`
+- `T-16` Add sync status indicator in UI — `done`
+- `T-17` Write unit tests for domain rules (schedule/expiration/validation) — `in_progress`
 - `T-18` Write integration tests (storage + reminders + manual save/load sync) — `todo`
 - `T-19` Run Android PWA manual QA (install/offline/notifications) — `todo`
 - `T-20` Release checklist + MVP cut — `todo`

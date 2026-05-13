@@ -12,6 +12,7 @@ import {
 import { HealthStatus } from "./components/HealthStatus";
 import { MedicineForm, type MedicineFormValues } from "./components/MedicineForm";
 import { MedicineList } from "./components/MedicineList";
+import { SyncStatusIndicator } from "./components/SyncStatusIndicator";
 import {
   getNotificationPermissionState,
   requestNotificationPermission,
@@ -246,20 +247,7 @@ export function App() {
             {syncStatus.state.phase === "loading" ? "Loading..." : "Load data"}
           </button>
         </div>
-        <p style={{ marginTop: 0, marginBottom: "0.4rem" }}>
-          Mudancas pendentes: <strong>{syncStatus.state.pendingChanges ? "sim" : "nao"}</strong>
-        </p>
-        {syncStatus.state.lastManualSaveAt && (
-          <p style={{ marginTop: 0, marginBottom: "0.25rem" }}>
-            Ultimo Save data: {new Date(syncStatus.state.lastManualSaveAt).toLocaleString()}
-          </p>
-        )}
-        {syncStatus.state.lastManualLoadAt && (
-          <p style={{ marginTop: 0, marginBottom: "0.25rem" }}>
-            Ultimo Load data: {new Date(syncStatus.state.lastManualLoadAt).toLocaleString()}
-          </p>
-        )}
-        {syncStatus.state.message && <p style={{ marginTop: 0, marginBottom: "0.75rem" }}>{syncStatus.state.message}</p>}
+        <SyncStatusIndicator status={syncStatus.state} />
         <HealthStatus isLoading={isLoading} isError={isError} data={data} />
         <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
         <MedicineForm

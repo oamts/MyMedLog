@@ -11,10 +11,10 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-16
-- Title: Add sync status indicator in UI
+- Task ID: T-17
+- Title: Write unit tests for domain rules (schedule/expiration/validation)
 - Status: in_progress
-- Why this task now: manual sync metadata/state was simplified and now needs a dedicated visual indicator component.
+- Why this task now: sync status indicator is complete and the next milestone is expanding automated domain coverage.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
@@ -56,18 +56,19 @@
 - Migrated web runtime structure fully to `apps/web/app/*`.
 - Consolidated manual sync state handling into `useManualSyncStatus` hook.
 - Simplified Save/Load status transitions (`saving`, `loading`, `synced`, `error`) and unified feedback messages.
+- Added dedicated `SyncStatusIndicator` UI component with compact, reusable visual status rendering.
 
 ## Last Completed
-- Task ID: T-15
-- Result: Pending-change metadata and sync status UX simplified with centralized state management.
+- Task ID: T-16
+- Result: Sync status indicator component added and integrated into main UI flow.
 - Evidence:
-  - `apps/web/app/hooks/useManualSyncStatus.ts`
+  - `apps/web/app/components/SyncStatusIndicator.tsx`
   - `apps/web/app/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Extract a dedicated sync status indicator UI component with consistent visual states and compact placement.
-- Expected output: Reusable sync indicator that clearly shows pending/saving/loading/synced/error without cluttering the page.
-- Definition of done for next step: T-16 marked `done` with indicator component integrated and verified in manual save/load flows.
+- Action to execute next: Add/update domain unit tests to cover current contract rules and edge cases for reminder/expiration validation.
+- Expected output: Broader deterministic unit coverage for domain behavior used in production flows.
+- Definition of done for next step: T-17 marked `done` with tests added for uncovered validation and scheduling boundaries.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed
