@@ -22,9 +22,9 @@ Status legend:
 - `T-11` Implement expiration alerts (single + multiple) — `done`
 - `T-12` Add reminder/alert deduplication (`trigger_id` strategy) — `done`
 - `T-13` Add offline-first behavior checks across core flows — `done`
-- `T-14` Implement manual sync foundation (`Save data` + `Load data`) — `in_progress`
-- `T-15` Simplify pending-change metadata and sync status UX — `todo`
-- `T-16` Add sync status indicator in UI — `todo`
+- `T-14` Implement manual sync foundation (`Save data` + `Load data`) — `done`
+- `T-15` Simplify pending-change metadata and sync status UX — `done`
+- `T-16` Add sync status indicator in UI — `in_progress`
 - `T-17` Write unit tests for domain rules (schedule/expiration/validation) — `todo`
 - `T-18` Write integration tests (storage + reminders + manual save/load sync) — `todo`
 - `T-19` Run Android PWA manual QA (install/offline/notifications) — `todo`

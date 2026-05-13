@@ -11,33 +11,33 @@
 - Phase goal: Finalize PWA baseline and installability settings.
 
 ## Current Task
-- Task ID: T-14
-- Title: Implement manual sync foundation (`Save data` + `Load data`)
+- Task ID: T-16
+- Title: Add sync status indicator in UI
 - Status: in_progress
-- Why this task now: offline-first QA is complete and sync was simplified to explicit user-driven actions.
+- Why this task now: manual sync metadata/state was simplified and now needs a dedicated visual indicator component.
 
 ## Progress Update
 - Added production PWA icons (`192`, `512`, `maskable`, `apple-touch`) under `apps/web/public`.
 - Hardened PWA config in `apps/web/vite.config.ts` with manifest metadata and Workbox runtime caching.
-- Added explicit service worker registration via `apps/web/src/pwa.ts` and import in `apps/web/src/main.tsx`.
+- Added explicit service worker registration via `apps/web/app/pwa.ts` and import in `apps/web/app/main.tsx`.
 - Added installability metadata in `apps/web/index.html` (`theme-color`, Apple tags, mask icon).
 - Local validation: `npm run build -w @mymedlog/web` succeeds and generates `sw.js` + precache manifest.
 - Added medicine contracts and validation schemas in `packages/contracts/src/index.ts` using Zod.
 - Added schedule discriminated union (`fixed_time` and `interval_hours` with allowed values 6/8/12).
 - Simplified medicine model by removing dosage and start/end dates; `expiresOn` is now optional.
 - Monorepo typecheck passes after contract changes.
-- Added IndexedDB local repository using Dexie in `apps/web/src/services/db.ts`.
+- Added IndexedDB local repository using Dexie in `apps/web/app/services/db.ts`.
 - Added local create/list flow in UI, persisting medicine before optional API sync call.
 - Added local update/delete repository functions and wired full CRUD controls in UI.
 - Added fixed-time reminder domain logic in `apps/web/src/domain/reminders/fixedTime.ts`.
 - Added unit tests for fixed-time scheduling behavior in `apps/web/src/domain/reminders/fixedTime.test.ts`.
-- Added reminder integration entrypoint `apps/web/src/services/reminderEngine.ts` for local schedule queries.
+- Added reminder integration entrypoint `apps/web/app/services/reminderEngine.ts` for local schedule queries.
 - Reminder calculations currently use device local timezone for MVP.
 - Added interval reminder domain logic in `apps/web/src/domain/reminders/interval.ts`.
 - Added unit tests for interval scheduling behavior in `apps/web/src/domain/reminders/interval.test.ts`.
 - Expanded reminder integration to expose fixed, interval, and merged local schedules.
-- Added notification adapter in `apps/web/src/services/notifications.ts` with permission handling and in-session dedupe.
-- Added foreground reminder polling in `apps/web/src/App.tsx` to dispatch local notifications for due reminders.
+- Added notification adapter in `apps/web/app/services/notifications.ts` with permission handling and in-session dedupe.
+- Added foreground reminder polling in `apps/web/app/App.tsx` to dispatch local notifications for due reminders.
 - Added notification permission status and enable action in UI.
 - Added expiration alert configuration to shared contracts with single/multiple validation rules.
 - Added expiration alert schedule engine with tests.
@@ -51,18 +51,23 @@
 - Fixed reminder due-window tolerance to include short late window and validated notification + dedupe behavior.
 - Product decision: keep offline-first writes and sync only on explicit actions (`Save data` and `Load data`).
 - Product decision: `Save data` overwrites backend; `Load data` overwrites local and clears pending changes.
+- Implemented backend snapshot endpoints (`GET /api/v1/medicines`, `PUT /api/v1/medicines/snapshot`).
+- Implemented manual sync controls in UI with pending-change metadata and last save/load timestamps.
+- Migrated web runtime structure fully to `apps/web/app/*`.
+- Consolidated manual sync state handling into `useManualSyncStatus` hook.
+- Simplified Save/Load status transitions (`saving`, `loading`, `synced`, `error`) and unified feedback messages.
 
 ## Last Completed
-- Task ID: T-13
-- Result: Offline-first behavior checks executed with PASS across core flows.
+- Task ID: T-15
+- Result: Pending-change metadata and sync status UX simplified with centralized state management.
 - Evidence:
-  - `docs/10-offline-qa-checklist.md`
-  - `apps/web/src/App.tsx`
+  - `apps/web/app/hooks/useManualSyncStatus.ts`
+  - `apps/web/app/App.tsx`
 
 ## Next Exact Step
-- Action to execute next: Implement backend snapshot endpoints and web sync service with manual `Save data`/`Load data` actions.
-- Expected output: Deterministic full-replacement sync behavior with pending-change tracking and clear UI feedback.
-- Definition of done for next step: T-14 marked `done` with successful manual save/load flow and pending-state reset rules.
+- Action to execute next: Extract a dedicated sync status indicator UI component with consistent visual states and compact placement.
+- Expected output: Reusable sync indicator that clearly shows pending/saving/loading/synced/error without cluttering the page.
+- Definition of done for next step: T-16 marked `done` with indicator component integrated and verified in manual save/load flows.
 
 ## Open Decisions / Blockers
 - D-001: Package manager set to `npm workspaces` for MVP simplicity | Owner: Mateus | Status: closed

@@ -22,13 +22,13 @@ import { getLocalReminderSchedule } from "./services/reminderEngine";
 import {
   createMedicineLocal,
   deleteMedicineLocal,
-  getSyncMetaLocal,
   listMedicinesLocal,
   markManualLoadSuccessLocal,
   markManualSaveSuccessLocal,
   replaceMedicinesLocal,
   updateMedicineLocal
 } from "./services/db";
+import { useManualSyncStatus } from "./hooks/useManualSyncStatus";
 
 const EMPTY_FORM_VALUES: MedicineFormValues = {
   name: "",
@@ -48,26 +48,20 @@ export function App() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [localSaveMessage, setLocalSaveMessage] = useState<string | null>(null);
   const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
-  const [syncMessage, setSyncMessage] = useState<string | null>(null);
-  const [pendingChanges, setPendingChanges] = useState(false);
-  const [lastManualSaveAt, setLastManualSaveAt] = useState<string | null>(null);
-  const [lastManualLoadAt, setLastManualLoadAt] = useState<string | null>(null);
   const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [formValues, setFormValues] = useState<MedicineFormValues>(EMPTY_FORM_VALUES);
   const [notificationPermission, setNotificationPermission] =
     useState<NotificationPermissionState>(getNotificationPermissionState());
+  const syncStatus = useManualSyncStatus();
 
   useEffect(() => {
     async function loadLocalState() {
       setLocalMedicines(await listMedicinesLocal());
-      const syncMeta = await getSyncMetaLocal();
-      setPendingChanges(syncMeta.hasPendingChanges);
-      setLastManualSaveAt(syncMeta.lastManualSaveAt);
-      setLastManualLoadAt(syncMeta.lastManualLoadAt);
+      await syncStatus.refreshFromStorage();
     }
 
     void loadLocalState();
-  }, []);
+  }, [syncStatus.refreshFromStorage]);
 
   useEffect(() => {
     async function checkDueReminders() {
@@ -140,8 +134,7 @@ export function App() {
           : `Salvo localmente: ${localMedicine.name}`
       );
       setLocalMedicines(await listMedicinesLocal());
-      const syncMeta = await getSyncMetaLocal();
-      setPendingChanges(syncMeta.hasPendingChanges);
+      await syncStatus.refreshFromStorage();
     } catch (error) {
       setValidationError(error instanceof Error ? error.message : "Erro ao salvar localmente");
       return;
@@ -170,8 +163,7 @@ export function App() {
   async function removeMedicine(id: string) {
     await deleteMedicineLocal(id);
     setLocalMedicines(await listMedicinesLocal());
-    const syncMeta = await getSyncMetaLocal();
-    setPendingChanges(syncMeta.hasPendingChanges);
+    await syncStatus.refreshFromStorage();
     if (editingMedicine?.id === id) {
       setEditingMedicine(null);
       setFormValues(EMPTY_FORM_VALUES);
@@ -179,35 +171,31 @@ export function App() {
   }
 
   async function saveData() {
-    setSyncMessage(null);
+    syncStatus.startSaving();
     try {
       const medicines = await listMedicinesLocal();
       const response = await putMedicinesSnapshot(medicines).unwrap();
       await markManualSaveSuccessLocal();
-      const syncMeta = await getSyncMetaLocal();
-      setPendingChanges(syncMeta.hasPendingChanges);
-      setLastManualSaveAt(syncMeta.lastManualSaveAt);
-      setSyncMessage(`Save data concluido (${response.total} registros enviados).`);
+      await syncStatus.markSaveSuccess(response.total);
     } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : "Falha ao salvar dados no backend.");
+      syncStatus.markError(error instanceof Error ? error.message : "Falha ao salvar dados no backend.");
     }
   }
 
   async function loadData() {
-    setSyncMessage(null);
+    syncStatus.startLoading();
     try {
       const medicines = await fetchMedicines().unwrap();
       await replaceMedicinesLocal(medicines);
       await markManualLoadSuccessLocal();
       setLocalMedicines(await listMedicinesLocal());
-      const syncMeta = await getSyncMetaLocal();
-      setPendingChanges(syncMeta.hasPendingChanges);
-      setLastManualLoadAt(syncMeta.lastManualLoadAt);
-      setSyncMessage(`Load data concluido (${medicines.length} registros carregados).`);
+      await syncStatus.markLoadSuccess(medicines.length);
     } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : "Falha ao carregar dados do backend.");
+      syncStatus.markError(error instanceof Error ? error.message : "Falha ao carregar dados do backend.");
     }
   }
+
+  const isSyncRunning = syncStatus.state.phase === "saving" || syncStatus.state.phase === "loading";
 
   return (
     <main
@@ -251,32 +239,32 @@ export function App() {
           </button>
         </div>
         <div style={{ marginBottom: "0.75rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <button type="button" onClick={() => void saveData()} disabled={saveSnapshotState.isLoading}>
-            {saveSnapshotState.isLoading ? "Saving..." : "Save data"}
+          <button type="button" onClick={() => void saveData()} disabled={isSyncRunning}>
+            {syncStatus.state.phase === "saving" ? "Saving..." : "Save data"}
           </button>
-          <button type="button" onClick={() => void loadData()} disabled={loadMedicinesState.isFetching}>
-            {loadMedicinesState.isFetching ? "Loading..." : "Load data"}
+          <button type="button" onClick={() => void loadData()} disabled={isSyncRunning}>
+            {syncStatus.state.phase === "loading" ? "Loading..." : "Load data"}
           </button>
         </div>
         <p style={{ marginTop: 0, marginBottom: "0.4rem" }}>
-          Mudancas pendentes: <strong>{pendingChanges ? "sim" : "nao"}</strong>
+          Mudancas pendentes: <strong>{syncStatus.state.pendingChanges ? "sim" : "nao"}</strong>
         </p>
-        {lastManualSaveAt && (
+        {syncStatus.state.lastManualSaveAt && (
           <p style={{ marginTop: 0, marginBottom: "0.25rem" }}>
-            Ultimo Save data: {new Date(lastManualSaveAt).toLocaleString()}
+            Ultimo Save data: {new Date(syncStatus.state.lastManualSaveAt).toLocaleString()}
           </p>
         )}
-        {lastManualLoadAt && (
+        {syncStatus.state.lastManualLoadAt && (
           <p style={{ marginTop: 0, marginBottom: "0.25rem" }}>
-            Ultimo Load data: {new Date(lastManualLoadAt).toLocaleString()}
+            Ultimo Load data: {new Date(syncStatus.state.lastManualLoadAt).toLocaleString()}
           </p>
         )}
-        {syncMessage && <p style={{ marginTop: 0, marginBottom: "0.75rem" }}>{syncMessage}</p>}
+        {syncStatus.state.message && <p style={{ marginTop: 0, marginBottom: "0.75rem" }}>{syncStatus.state.message}</p>}
         <HealthStatus isLoading={isLoading} isError={isError} data={data} />
         <hr style={{ margin: "1.25rem 0", borderColor: "#d1d5db" }} />
         <MedicineForm
           initialValues={formValues}
-          isSubmitting={false}
+          isSubmitting={saveSnapshotState.isLoading || loadMedicinesState.isFetching}
           isEditing={Boolean(editingMedicine)}
           onSubmit={onSubmit}
         />
