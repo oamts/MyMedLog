@@ -1,7 +1,7 @@
-import { listMedicinesLocal } from "./db";
-import { getUpcomingFixedReminders } from "../domain/reminders/fixedTime";
-import { getUpcomingIntervalReminders } from "../domain/reminders/interval";
-import { getUpcomingExpirationAlerts } from "../domain/reminders/expiration";
+import { listMedicinesLocal } from "@/services/db";
+import { getUpcomingFixedReminders } from "@/domain/reminders/fixedTime";
+import { getUpcomingIntervalReminders } from "@/domain/reminders/interval";
+import { getUpcomingExpirationAlerts } from "@/domain/reminders/expiration";
 
 export async function getLocalFixedReminderSchedule(now: Date = new Date()) {
   const medicines = await listMedicinesLocal();

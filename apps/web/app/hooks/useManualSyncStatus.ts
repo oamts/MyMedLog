@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { getSyncMetaLocal } from "../services/db";
+import { getSyncMetaLocal } from "@/services/db";
 
 export type SyncPhase = "idle" | "pending" | "saving" | "loading" | "synced" | "error";
 

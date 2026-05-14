@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Medicine } from "@mymedlog/contracts";
-import { getUpcomingExpirationAlerts } from "./expiration";
+import { getUpcomingExpirationAlerts } from "@/domain/reminders/expiration";
 
 function buildMedicine(overrides: Partial<Medicine>): Medicine {
   return {

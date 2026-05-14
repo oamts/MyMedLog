@@ -8,18 +8,18 @@ import {
   useGetHealthQuery,
   useLazyGetMedicinesQuery,
   usePutMedicinesSnapshotMutation
-} from "./services/api";
-import { HealthStatus } from "./components/HealthStatus";
-import { MedicineForm, type MedicineFormValues } from "./components/MedicineForm";
-import { MedicineList } from "./components/MedicineList";
-import { SyncStatusIndicator } from "./components/SyncStatusIndicator";
+} from "@/services/api";
+import { HealthStatus } from "@/components/HealthStatus";
+import { MedicineForm, type MedicineFormValues } from "@/components/MedicineForm";
+import { MedicineList } from "@/components/MedicineList";
+import { SyncStatusIndicator } from "@/components/SyncStatusIndicator";
 import {
   getNotificationPermissionState,
   requestNotificationPermission,
   notifyReminder,
   type NotificationPermissionState
-} from "./services/notifications";
-import { getLocalReminderSchedule } from "./services/reminderEngine";
+} from "@/services/notifications";
+import { getLocalReminderSchedule } from "@/services/reminderEngine";
 import {
   createMedicineLocal,
   deleteMedicineLocal,
@@ -28,8 +28,8 @@ import {
   markManualSaveSuccessLocal,
   replaceMedicinesLocal,
   updateMedicineLocal
-} from "./services/db";
-import { useManualSyncStatus } from "./hooks/useManualSyncStatus";
+} from "@/services/db";
+import { useManualSyncStatus } from "@/hooks/useManualSyncStatus";
 
 const EMPTY_FORM_VALUES: MedicineFormValues = {
   name: "",

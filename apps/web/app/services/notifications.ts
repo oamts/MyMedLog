@@ -2,7 +2,7 @@ import {
   hasDeliveredTriggerLocal,
   markDeliveredTriggerLocal,
   pruneDeliveredTriggersLocal
-} from "./db";
+} from "@/services/db";
 
 export type NotificationPermissionState = NotificationPermission | "unsupported";
 

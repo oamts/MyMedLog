@@ -1,4 +1,4 @@
-import type { SyncStatusState } from "../hooks/useManualSyncStatus";
+import type { SyncStatusState } from "@/hooks/useManualSyncStatus";
 
 type SyncStatusIndicatorProps = {
   status: SyncStatusState;

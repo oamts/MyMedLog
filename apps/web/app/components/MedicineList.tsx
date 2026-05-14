@@ -1,5 +1,5 @@
 import type { Medicine } from "@mymedlog/contracts";
-import { MedicineListItem } from "./MedicineListItem";
+import { MedicineListItem } from "@/components/MedicineListItem";
 
 type MedicineListProps = {
   medicines: Medicine[];
