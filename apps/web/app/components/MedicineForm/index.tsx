@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import "./style.css";
 
 export type MedicineFormValues = {
   name: string;
@@ -39,7 +40,7 @@ export function MedicineForm({
   }, [initialValues, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gap: "0.75rem" }}>
+    <form onSubmit={handleSubmit(onSubmit)} className="medicine-form">
       <input
         placeholder="Nome do medicamento"
         {...register("name", {
@@ -47,7 +48,7 @@ export function MedicineForm({
           minLength: { value: 2, message: "Nome deve ter ao menos 2 caracteres" }
         })}
       />
-      {errors.name && <p style={{ margin: 0, color: "#b91c1c" }}>{errors.name.message}</p>}
+      {errors.name && <p className="medicine-form__field-error">{errors.name.message}</p>}
       <input type="date" {...register("expiresOn")} />
       <input
         type="time"
@@ -59,9 +60,9 @@ export function MedicineForm({
           }
         })}
       />
-      {errors.time && <p style={{ margin: 0, color: "#b91c1c" }}>{errors.time.message}</p>}
+      {errors.time && <p className="medicine-form__field-error">{errors.time.message}</p>}
       <input placeholder="Observacoes (opcional)" {...register("notes")} />
-      <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+      <label className="medicine-form__inline-label">
         <input type="checkbox" {...register("expirationAlertEnabled")} />
         Alerta de validade ativo
       </label>
@@ -75,12 +76,12 @@ export function MedicineForm({
           required: "Informe pelo menos um dia"
         })}
       />
-      <label style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+      <label className="medicine-form__inline-label">
         <input type="checkbox" {...register("includeOnExpirationDay")} />
         Incluir no dia da validade
       </label>
       {errors.expirationDaysBefore && (
-        <p style={{ margin: 0, color: "#b91c1c" }}>{errors.expirationDaysBefore.message}</p>
+        <p className="medicine-form__field-error">{errors.expirationDaysBefore.message}</p>
       )}
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Salvando..." : isEditing ? "Atualizar medicamento" : "Salvar medicamento"}

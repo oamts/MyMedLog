@@ -1,4 +1,5 @@
 import type { SyncStatusState } from "@/hooks/useManualSyncStatus";
+import "./style.css";
 
 type SyncStatusIndicatorProps = {
   status: SyncStatusState;
@@ -13,44 +14,36 @@ const PHASE_LABEL: Record<SyncStatusState["phase"], string> = {
   error: "Error"
 };
 
-const PHASE_COLOR: Record<SyncStatusState["phase"], string> = {
-  idle: "#6b7280",
-  pending: "#b45309",
-  saving: "#0369a1",
-  loading: "#0369a1",
-  synced: "#065f46",
-  error: "#b91c1c"
+const PHASE_CLASS: Record<SyncStatusState["phase"], string> = {
+  idle: "sync-status-indicator__phase-idle",
+  pending: "sync-status-indicator__phase-pending",
+  saving: "sync-status-indicator__phase-saving",
+  loading: "sync-status-indicator__phase-loading",
+  synced: "sync-status-indicator__phase-synced",
+  error: "sync-status-indicator__phase-error"
 };
 
 export function SyncStatusIndicator({ status }: SyncStatusIndicatorProps) {
   return (
-    <div
-      style={{
-        marginBottom: "0.75rem",
-        border: "1px solid #d1d5db",
-        borderRadius: "10px",
-        padding: "0.65rem 0.75rem",
-        background: "#ffffff"
-      }}
-    >
-      <p style={{ margin: 0, marginBottom: "0.35rem" }}>
+    <div className="sync-status-indicator">
+      <p className="sync-status-indicator__line">
         Sync status:{" "}
-        <strong style={{ color: PHASE_COLOR[status.phase] }}>{PHASE_LABEL[status.phase]}</strong>
+        <strong className={PHASE_CLASS[status.phase]}>{PHASE_LABEL[status.phase]}</strong>
       </p>
-      <p style={{ margin: 0, marginBottom: "0.25rem" }}>
+      <p className="sync-status-indicator__line">
         Pending changes: <strong>{status.pendingChanges ? "yes" : "no"}</strong>
       </p>
       {status.lastManualSaveAt && (
-        <p style={{ margin: 0, marginBottom: "0.2rem" }}>
+        <p className="sync-status-indicator__line-compact">
           Last Save data: {new Date(status.lastManualSaveAt).toLocaleString()}
         </p>
       )}
       {status.lastManualLoadAt && (
-        <p style={{ margin: 0, marginBottom: "0.2rem" }}>
+        <p className="sync-status-indicator__line-compact">
           Last Load data: {new Date(status.lastManualLoadAt).toLocaleString()}
         </p>
       )}
-      {status.message && <p style={{ margin: 0 }}>{status.message}</p>}
+      {status.message && <p className="sync-status-indicator__line-last">{status.message}</p>}
     </div>
   );
 }

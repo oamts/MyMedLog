@@ -1,0 +1,15 @@
+.medicine-form {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.medicine-form__field-error {
+  margin: 0;
+  color: var(--color-error);
+}
+
+.medicine-form__inline-label {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}

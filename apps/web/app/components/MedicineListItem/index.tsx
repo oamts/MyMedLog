@@ -1,4 +1,5 @@
 import type { Medicine } from "@mymedlog/contracts";
+import "./style.css";
 
 type MedicineListItemProps = {
   medicine: Medicine;
@@ -8,18 +9,11 @@ type MedicineListItemProps = {
 
 export function MedicineListItem({ medicine, onEdit, onDelete }: MedicineListItemProps) {
   return (
-    <div
-      style={{
-        margin: "0.4rem 0",
-        padding: "0.5rem",
-        border: "1px solid #d1d5db",
-        borderRadius: "10px"
-      }}
-    >
-      <p style={{ margin: 0 }}>
+    <div className="medicine-list-item">
+      <p className="medicine-list-item__text">
         <strong>{medicine.name}</strong> — validade {medicine.expiresOn ?? "nao informada"}
       </p>
-      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.35rem" }}>
+      <div className="medicine-list-item__actions">
         <button type="button" onClick={() => onEdit(medicine)}>
           Editar
         </button>

@@ -1,0 +1,42 @@
+.sync-status-indicator {
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-surface-solid);
+}
+
+.sync-status-indicator__line {
+  margin: 0;
+  margin-bottom: var(--space-2);
+}
+
+.sync-status-indicator__line-compact {
+  margin: 0;
+  margin-bottom: var(--space-1);
+}
+
+.sync-status-indicator__line-last {
+  margin: 0;
+}
+
+.sync-status-indicator__phase-idle {
+  color: var(--color-muted);
+}
+
+.sync-status-indicator__phase-pending {
+  color: var(--color-warning);
+}
+
+.sync-status-indicator__phase-saving,
+.sync-status-indicator__phase-loading {
+  color: var(--color-info);
+}
+
+.sync-status-indicator__phase-synced {
+  color: var(--color-success);
+}
+
+.sync-status-indicator__phase-error {
+  color: var(--color-error);
+}
