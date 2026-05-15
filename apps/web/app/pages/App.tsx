@@ -24,12 +24,10 @@ import {
   createMedicineLocal,
   deleteMedicineLocal,
   listMedicinesLocal,
-  markManualLoadSuccessLocal,
-  markManualSaveSuccessLocal,
-  replaceMedicinesLocal,
   updateMedicineLocal
 } from "@/services/db";
 import { useManualSyncStatus } from "@/hooks/useManualSyncStatus";
+import { loadDataFromBackend, saveDataToBackend } from "@/services/manualSync";
 
 const EMPTY_FORM_VALUES: MedicineFormValues = {
   name: "",
@@ -174,10 +172,8 @@ export function App() {
   async function saveData() {
     syncStatus.startSaving();
     try {
-      const medicines = await listMedicinesLocal();
-      const response = await putMedicinesSnapshot(medicines).unwrap();
-      await markManualSaveSuccessLocal();
-      await syncStatus.markSaveSuccess(response.total);
+      const total = await saveDataToBackend((medicines) => putMedicinesSnapshot(medicines).unwrap());
+      await syncStatus.markSaveSuccess(total);
     } catch (error) {
       syncStatus.markError(error instanceof Error ? error.message : "Falha ao salvar dados no backend.");
     }
@@ -186,11 +182,9 @@ export function App() {
   async function loadData() {
     syncStatus.startLoading();
     try {
-      const medicines = await fetchMedicines().unwrap();
-      await replaceMedicinesLocal(medicines);
-      await markManualLoadSuccessLocal();
+      const total = await loadDataFromBackend(() => fetchMedicines().unwrap());
       setLocalMedicines(await listMedicinesLocal());
-      await syncStatus.markLoadSuccess(medicines.length);
+      await syncStatus.markLoadSuccess(total);
     } catch (error) {
       syncStatus.markError(error instanceof Error ? error.message : "Falha ao carregar dados do backend.");
     }
