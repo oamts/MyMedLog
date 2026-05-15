@@ -1,9 +1,5 @@
+import type { HealthResponse, Medicine, MedicinesSnapshotResponse } from "@mymedlog/contracts";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type {
-  HealthResponse,
-  Medicine,
-  MedicinesSnapshotResponse
-} from "@mymedlog/contracts";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3333";
 
@@ -27,8 +23,4 @@ export const api = createApi({
   })
 });
 
-export const {
-  useGetHealthQuery,
-  useLazyGetMedicinesQuery,
-  usePutMedicinesSnapshotMutation
-} = api;
+export const { useGetHealthQuery, useLazyGetMedicinesQuery, usePutMedicinesSnapshotMutation } = api;

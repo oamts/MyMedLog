@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Medicine } from "@mymedlog/contracts";
 import { loadDataFromBackend, saveDataToBackend } from "@/services/manualSync";
+import type { Medicine } from "@mymedlog/contracts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/services/db", () => ({
   listMedicinesLocal: vi.fn(),

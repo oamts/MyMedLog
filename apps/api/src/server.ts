@@ -1,12 +1,12 @@
-import Fastify from "fastify";
 import swagger from "@fastify/swagger";
 import swaggerUI from "@fastify/swagger-ui";
 import {
-  medicinesSnapshotSchema,
-  medicineInputSchema,
   type CreateMedicineResponse,
-  type HealthResponse
+  type HealthResponse,
+  medicineInputSchema,
+  medicinesSnapshotSchema
 } from "@mymedlog/contracts";
+import Fastify from "fastify";
 
 const app = Fastify({ logger: true });
 const medicines: CreateMedicineResponse[] = [];

@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import type { Medicine } from "@mymedlog/contracts";
 import { getNextFixedReminderAt, getUpcomingFixedReminders } from "@/domain/reminders/fixedTime";
+import type { Medicine } from "@mymedlog/contracts";
+import { describe, expect, it } from "vitest";
 
 function buildMedicine(times: string[]): Medicine {
   return {

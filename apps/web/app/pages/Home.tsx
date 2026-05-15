@@ -1,3 +1,3 @@
 export function Home() {
-  return <div>ola mundo</div>
+  return <div>ola mundo</div>;
 }

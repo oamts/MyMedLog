@@ -1,16 +1,16 @@
-import {
-  useGetHealthQuery,
-  useLazyGetMedicinesQuery,
-  usePutMedicinesSnapshotMutation
-} from "@/services/api";
 import { HealthStatus } from "@/components/HealthStatus";
 import { MedicineForm } from "@/components/MedicineForm";
 import { MedicineList } from "@/components/MedicineList";
 import { SyncStatusIndicator } from "@/components/SyncStatusIndicator";
 import { useManualSyncStatus } from "@/hooks/useManualSyncStatus";
+import { useMedicinesCrud } from "@/hooks/useMedicinesCrud";
 import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 import { useReminderPolling } from "@/hooks/useReminderPolling";
-import { useMedicinesCrud } from "@/hooks/useMedicinesCrud";
+import {
+  useGetHealthQuery,
+  useLazyGetMedicinesQuery,
+  usePutMedicinesSnapshotMutation
+} from "@/services/api";
 
 export function App() {
   const { data, isLoading, isError } = useGetHealthQuery();
@@ -45,8 +45,7 @@ export function App() {
         display: "grid",
         placeItems: "center",
         padding: "2rem",
-        background:
-          "radial-gradient(circle at top, #d1fae5 0%, #f4efe6 35%, #efe7d8 100%)",
+        background: "radial-gradient(circle at top, #d1fae5 0%, #f4efe6 35%, #efe7d8 100%)",
         color: "#1f2937",
         fontFamily: "'Source Sans 3', system-ui, sans-serif"
       }}
@@ -74,7 +73,9 @@ export function App() {
             onClick={() => {
               void enableNotifications();
             }}
-            disabled={notificationPermission === "granted" || notificationPermission === "unsupported"}
+            disabled={
+              notificationPermission === "granted" || notificationPermission === "unsupported"
+            }
           >
             Ativar notificacoes
           </button>

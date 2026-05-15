@@ -1,10 +1,10 @@
-import type { Medicine } from "@mymedlog/contracts";
 import {
   listMedicinesLocal,
   markManualLoadSuccessLocal,
   markManualSaveSuccessLocal,
   replaceMedicinesLocal
 } from "@/services/db";
+import type { Medicine } from "@mymedlog/contracts";
 
 type SaveSnapshot = (medicines: Medicine[]) => Promise<{ total: number }>;
 type LoadSnapshot = () => Promise<Medicine[]>;

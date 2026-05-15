@@ -1,9 +1,6 @@
 import type { Medicine } from "@mymedlog/contracts";
 
-export function getNextIntervalReminderAt(
-  medicine: Medicine,
-  now: Date = new Date()
-): Date | null {
+export function getNextIntervalReminderAt(medicine: Medicine, now: Date = new Date()): Date | null {
   if (medicine.reminder.type !== "interval_hours") {
     return null;
   }

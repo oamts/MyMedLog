@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import type { Medicine } from "@mymedlog/contracts";
 import { getUpcomingExpirationAlerts } from "@/domain/reminders/expiration";
+import type { Medicine } from "@mymedlog/contracts";
+import { describe, expect, it } from "vitest";
 
 function buildMedicine(overrides: Partial<Medicine>): Medicine {
   return {
@@ -21,14 +21,22 @@ function buildMedicine(overrides: Partial<Medicine>): Medicine {
 
 describe("getUpcomingExpirationAlerts", () => {
   it("returns no alerts when disabled", () => {
-    const result = getUpcomingExpirationAlerts([buildMedicine({ expiresOn: "2026-06-10" })], new Date("2026-05-01T10:00:00"));
+    const result = getUpcomingExpirationAlerts(
+      [buildMedicine({ expiresOn: "2026-06-10" })],
+      new Date("2026-05-01T10:00:00")
+    );
     expect(result).toHaveLength(0);
   });
 
   it("returns single mode alert date", () => {
     const medicine = buildMedicine({
       expiresOn: "2026-06-10",
-      expirationAlert: { enabled: true, mode: "single", daysBefore: [7], includeOnExpirationDay: false }
+      expirationAlert: {
+        enabled: true,
+        mode: "single",
+        daysBefore: [7],
+        includeOnExpirationDay: false
+      }
     });
     const result = getUpcomingExpirationAlerts([medicine], new Date("2026-05-01T10:00:00"));
     expect(result).toHaveLength(1);
@@ -38,9 +46,19 @@ describe("getUpcomingExpirationAlerts", () => {
   it("returns multiple mode including expiration day", () => {
     const medicine = buildMedicine({
       expiresOn: "2026-06-10",
-      expirationAlert: { enabled: true, mode: "multiple", daysBefore: [30, 7, 1], includeOnExpirationDay: true }
+      expirationAlert: {
+        enabled: true,
+        mode: "multiple",
+        daysBefore: [30, 7, 1],
+        includeOnExpirationDay: true
+      }
     });
     const result = getUpcomingExpirationAlerts([medicine], new Date("2026-05-01T10:00:00"));
-    expect(result.map((x) => x.targetDate)).toEqual(["2026-05-11", "2026-06-03", "2026-06-09", "2026-06-10"]);
+    expect(result.map((x) => x.targetDate)).toEqual([
+      "2026-05-11",
+      "2026-06-03",
+      "2026-06-09",
+      "2026-06-10"
+    ]);
   });
 });

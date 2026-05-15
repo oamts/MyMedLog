@@ -1,7 +1,7 @@
-import { defineConfig } from "vite";
+import { URL, fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   resolve: {

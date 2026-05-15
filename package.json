@@ -12,6 +12,10 @@
     "dev:api": "npm run dev -w @mymedlog/api",
     "dev:web": "npm run dev -w @mymedlog/web",
     "build": "npm run build -w @mymedlog/contracts && npm run build -w @mymedlog/api && npm run build -w @mymedlog/web",
+    "lint": "npm run lint -w @mymedlog/contracts && npm run lint -w @mymedlog/api && npm run lint -w @mymedlog/web",
+    "lint:fix": "npm run lint:fix -w @mymedlog/contracts && npm run lint:fix -w @mymedlog/api && npm run lint:fix -w @mymedlog/web",
+    "format": "npm run format -w @mymedlog/contracts && npm run format -w @mymedlog/api && npm run format -w @mymedlog/web",
+    "format:check": "npm run format:check -w @mymedlog/contracts && npm run format:check -w @mymedlog/api && npm run format:check -w @mymedlog/web",
     "typecheck": "npm run typecheck -w @mymedlog/contracts && npm run typecheck -w @mymedlog/api && npm run typecheck -w @mymedlog/web",
     "prepare": "husky"
   },

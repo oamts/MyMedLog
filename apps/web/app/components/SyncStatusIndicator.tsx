@@ -34,7 +34,8 @@ export function SyncStatusIndicator({ status }: SyncStatusIndicatorProps) {
       }}
     >
       <p style={{ margin: 0, marginBottom: "0.35rem" }}>
-        Sync status: <strong style={{ color: PHASE_COLOR[status.phase] }}>{PHASE_LABEL[status.phase]}</strong>
+        Sync status:{" "}
+        <strong style={{ color: PHASE_COLOR[status.phase] }}>{PHASE_LABEL[status.phase]}</strong>
       </p>
       <p style={{ margin: 0, marginBottom: "0.25rem" }}>
         Pending changes: <strong>{status.pendingChanges ? "yes" : "no"}</strong>

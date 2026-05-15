@@ -1,5 +1,5 @@
+import { type Medicine, type MedicineInput, medicineSchema } from "@mymedlog/contracts";
 import Dexie, { type Table } from "dexie";
-import { medicineSchema, type Medicine, type MedicineInput } from "@mymedlog/contracts";
 
 type SyncMeta = {
   id: "sync-meta";
@@ -73,10 +73,7 @@ export async function listMedicinesLocal(): Promise<Medicine[]> {
   return db.medicines.orderBy("updatedAt").reverse().toArray();
 }
 
-export async function updateMedicineLocal(
-  id: string,
-  input: MedicineInput
-): Promise<Medicine> {
+export async function updateMedicineLocal(id: string, input: MedicineInput): Promise<Medicine> {
   const existing = await db.medicines.get(id);
   if (!existing) {
     throw new Error("Medicine not found");

@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
-import {
-  medicineInputSchema,
-  type Medicine,
-  type MedicineInput
-} from "@mymedlog/contracts";
-import { loadDataFromBackend, saveDataToBackend } from "@/services/manualSync";
+import type { MedicineFormValues } from "@/components/MedicineForm";
+import type { SyncStatusState } from "@/hooks/useManualSyncStatus";
 import {
   createMedicineLocal,
   deleteMedicineLocal,
   listMedicinesLocal,
   updateMedicineLocal
 } from "@/services/db";
-import { type MedicineFormValues } from "@/components/MedicineForm";
-import { type SyncStatusState } from "@/hooks/useManualSyncStatus";
+import { loadDataFromBackend, saveDataToBackend } from "@/services/manualSync";
+import { type Medicine, type MedicineInput, medicineInputSchema } from "@mymedlog/contracts";
+import { useEffect, useState } from "react";
 
 const EMPTY_FORM_VALUES: MedicineFormValues = {
   name: "",
@@ -41,7 +37,11 @@ type UseMedicinesCrudArgs = {
   fetchMedicines: () => Promise<Medicine[]>;
 };
 
-export function useMedicinesCrud({ syncStatus, putSnapshot, fetchMedicines }: UseMedicinesCrudArgs) {
+export function useMedicinesCrud({
+  syncStatus,
+  putSnapshot,
+  fetchMedicines
+}: UseMedicinesCrudArgs) {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [localSaveMessage, setLocalSaveMessage] = useState<string | null>(null);
   const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
@@ -111,7 +111,8 @@ export function useMedicinesCrud({ syncStatus, putSnapshot, fetchMedicines }: Us
     setFormValues({
       name: medicine.name,
       expiresOn: medicine.expiresOn ?? "",
-      time: medicine.reminder.type === "fixed_time" ? medicine.reminder.times[0] ?? "08:00" : "08:00",
+      time:
+        medicine.reminder.type === "fixed_time" ? (medicine.reminder.times[0] ?? "08:00") : "08:00",
       notes: medicine.notes ?? "",
       expirationAlertEnabled: medicine.expirationAlert.enabled,
       expirationAlertMode: medicine.expirationAlert.mode,
@@ -138,7 +139,9 @@ export function useMedicinesCrud({ syncStatus, putSnapshot, fetchMedicines }: Us
       const total = await saveDataToBackend(putSnapshot);
       await syncStatus.markSaveSuccess(total);
     } catch (error) {
-      syncStatus.markError(error instanceof Error ? error.message : "Falha ao salvar dados no backend.");
+      syncStatus.markError(
+        error instanceof Error ? error.message : "Falha ao salvar dados no backend."
+      );
     }
   }
 
@@ -149,7 +152,9 @@ export function useMedicinesCrud({ syncStatus, putSnapshot, fetchMedicines }: Us
       setLocalMedicines(await listMedicinesLocal());
       await syncStatus.markLoadSuccess(total);
     } catch (error) {
-      syncStatus.markError(error instanceof Error ? error.message : "Falha ao carregar dados do backend.");
+      syncStatus.markError(
+        error instanceof Error ? error.message : "Falha ao carregar dados do backend."
+      );
     }
   }
 

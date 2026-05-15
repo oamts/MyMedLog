@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { notifyReminder } from "@/services/notifications";
 import { getLocalReminderSchedule } from "@/services/reminderEngine";
+import { useEffect } from "react";
 
 export function useReminderPolling() {
   useEffect(() => {

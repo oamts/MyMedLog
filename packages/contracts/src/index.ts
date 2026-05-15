@@ -66,8 +66,7 @@ const medicineBaseSchema = z.object({
 });
 export const medicineInputSchema = medicineBaseSchema;
 
-export const medicineSchema = medicineBaseSchema
-  .extend({ id: z.string().uuid() });
+export const medicineSchema = medicineBaseSchema.extend({ id: z.string().uuid() });
 
 export type ReminderType = z.infer<typeof reminderTypeSchema>;
 export type ExpirationAlertMode = z.infer<typeof expirationAlertModeSchema>;

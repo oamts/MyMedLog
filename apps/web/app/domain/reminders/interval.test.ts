@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
+import {
+  getNextIntervalReminderAt,
+  getUpcomingIntervalReminders
+} from "@/domain/reminders/interval";
 import type { Medicine } from "@mymedlog/contracts";
-import { getNextIntervalReminderAt, getUpcomingIntervalReminders } from "@/domain/reminders/interval";
+import { describe, expect, it } from "vitest";
 
 function buildIntervalMedicine(everyHours: 6 | 8 | 12, startsAt: string): Medicine {
   return {
