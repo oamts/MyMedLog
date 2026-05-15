@@ -1,4 +1,4 @@
-import type { Medicine, MedicinesSnapshotResponse } from "@mymedlog/contracts";
+import type { Medicine } from "@mymedlog/contracts";
 import {
   listMedicinesLocal,
   markManualLoadSuccessLocal,
@@ -6,7 +6,7 @@ import {
   replaceMedicinesLocal
 } from "@/services/db";
 
-type SaveSnapshot = (medicines: Medicine[]) => Promise<MedicinesSnapshotResponse>;
+type SaveSnapshot = (medicines: Medicine[]) => Promise<{ total: number }>;
 type LoadSnapshot = () => Promise<Medicine[]>;
 
 export async function saveDataToBackend(saveSnapshot: SaveSnapshot): Promise<number> {

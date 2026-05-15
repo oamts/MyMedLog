@@ -1,194 +1,40 @@
-import { useEffect, useState } from "react";
-import {
-  medicineInputSchema,
-  type Medicine,
-  type MedicineInput
-} from "@mymedlog/contracts";
 import {
   useGetHealthQuery,
   useLazyGetMedicinesQuery,
   usePutMedicinesSnapshotMutation
 } from "@/services/api";
 import { HealthStatus } from "@/components/HealthStatus";
-import { MedicineForm, type MedicineFormValues } from "@/components/MedicineForm";
+import { MedicineForm } from "@/components/MedicineForm";
 import { MedicineList } from "@/components/MedicineList";
 import { SyncStatusIndicator } from "@/components/SyncStatusIndicator";
-import {
-  getNotificationPermissionState,
-  requestNotificationPermission,
-  notifyReminder,
-  type NotificationPermissionState
-} from "@/services/notifications";
-import { getLocalReminderSchedule } from "@/services/reminderEngine";
-import {
-  createMedicineLocal,
-  deleteMedicineLocal,
-  listMedicinesLocal,
-  updateMedicineLocal
-} from "@/services/db";
 import { useManualSyncStatus } from "@/hooks/useManualSyncStatus";
-import { loadDataFromBackend, saveDataToBackend } from "@/services/manualSync";
-
-const EMPTY_FORM_VALUES: MedicineFormValues = {
-  name: "",
-  expiresOn: "",
-  time: "08:00",
-  notes: "",
-  expirationAlertEnabled: false,
-  expirationAlertMode: "single",
-  expirationDaysBefore: "30",
-  includeOnExpirationDay: true
-};
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
+import { useReminderPolling } from "@/hooks/useReminderPolling";
+import { useMedicinesCrud } from "@/hooks/useMedicinesCrud";
 
 export function App() {
   const { data, isLoading, isError } = useGetHealthQuery();
   const [putMedicinesSnapshot, saveSnapshotState] = usePutMedicinesSnapshotMutation();
   const [fetchMedicines, loadMedicinesState] = useLazyGetMedicinesQuery();
-  const [validationError, setValidationError] = useState<string | null>(null);
-  const [localSaveMessage, setLocalSaveMessage] = useState<string | null>(null);
-  const [localMedicines, setLocalMedicines] = useState<Medicine[]>([]);
-  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
-  const [formValues, setFormValues] = useState<MedicineFormValues>(EMPTY_FORM_VALUES);
-  const [notificationPermission, setNotificationPermission] =
-    useState<NotificationPermissionState>(getNotificationPermissionState());
   const syncStatus = useManualSyncStatus();
-
-  useEffect(() => {
-    async function loadLocalState() {
-      setLocalMedicines(await listMedicinesLocal());
-      await syncStatus.refreshFromStorage();
-    }
-
-    void loadLocalState();
-  }, [syncStatus.refreshFromStorage]);
-
-  useEffect(() => {
-    async function checkDueReminders() {
-      const schedule = await getLocalReminderSchedule();
-      const now = Date.now();
-      const lookbackMs = 60 * 1000;
-      const lookaheadMs = 60 * 1000;
-
-      await Promise.all(schedule.map(async (item) => {
-        const nextAtMs = new Date(item.nextAt).getTime();
-        const isDueSoon = nextAtMs >= now - lookbackMs && nextAtMs <= now + lookaheadMs;
-
-        if (isDueSoon) {
-          await notifyReminder(item);
-        }
-      }));
-    }
-
-    void checkDueReminders();
-    const timerId = window.setInterval(() => {
-      void checkDueReminders();
-    }, 60 * 1000);
-
-    return () => {
-      window.clearInterval(timerId);
-    };
-  }, []);
-
-  async function enableNotifications() {
-    const permission = await requestNotificationPermission();
-    setNotificationPermission(permission);
-  }
-
-  async function onSubmit(values: MedicineFormValues) {
-    setValidationError(null);
-    setLocalSaveMessage(null);
-
-    const payload: MedicineInput = {
-      expirationAlert: {
-        enabled: values.expirationAlertEnabled,
-        mode: values.expirationAlertMode,
-        daysBefore: values.expirationDaysBefore
-          .split(",")
-          .map((item) => Number(item.trim()))
-          .filter((item) => Number.isInteger(item) && item >= 0),
-        includeOnExpirationDay: values.includeOnExpirationDay
-      },
-      name: values.name,
-      expiresOn: values.expiresOn || undefined,
-      notes: values.notes || undefined,
-      reminder: {
-        type: "fixed_time",
-        times: [values.time]
-      }
-    };
-
-    const parsed = medicineInputSchema.safeParse(payload);
-    if (!parsed.success) {
-      setValidationError(parsed.error.issues[0]?.message ?? "Dados invalidos");
-      return;
-    }
-
-    try {
-      const localMedicine = editingMedicine
-        ? await updateMedicineLocal(editingMedicine.id, parsed.data)
-        : await createMedicineLocal(parsed.data);
-      setLocalSaveMessage(
-        editingMedicine
-          ? `Atualizado localmente: ${localMedicine.name}`
-          : `Salvo localmente: ${localMedicine.name}`
-      );
-      setLocalMedicines(await listMedicinesLocal());
-      await syncStatus.refreshFromStorage();
-    } catch (error) {
-      setValidationError(error instanceof Error ? error.message : "Erro ao salvar localmente");
-      return;
-    }
-
-    setEditingMedicine(null);
-    setFormValues(EMPTY_FORM_VALUES);
-  }
-
-  function startEdit(medicine: Medicine) {
-    setEditingMedicine(medicine);
-    setFormValues({
-      name: medicine.name,
-      expiresOn: medicine.expiresOn ?? "",
-      time: medicine.reminder.type === "fixed_time" ? medicine.reminder.times[0] ?? "08:00" : "08:00",
-      notes: medicine.notes ?? "",
-      expirationAlertEnabled: medicine.expirationAlert.enabled,
-      expirationAlertMode: medicine.expirationAlert.mode,
-      expirationDaysBefore: medicine.expirationAlert.daysBefore.join(","),
-      includeOnExpirationDay: medicine.expirationAlert.includeOnExpirationDay
-    });
-    setValidationError(null);
-    setLocalSaveMessage(`Editando: ${medicine.name}`);
-  }
-
-  async function removeMedicine(id: string) {
-    await deleteMedicineLocal(id);
-    setLocalMedicines(await listMedicinesLocal());
-    await syncStatus.refreshFromStorage();
-    if (editingMedicine?.id === id) {
-      setEditingMedicine(null);
-      setFormValues(EMPTY_FORM_VALUES);
-    }
-  }
-
-  async function saveData() {
-    syncStatus.startSaving();
-    try {
-      const total = await saveDataToBackend((medicines) => putMedicinesSnapshot(medicines).unwrap());
-      await syncStatus.markSaveSuccess(total);
-    } catch (error) {
-      syncStatus.markError(error instanceof Error ? error.message : "Falha ao salvar dados no backend.");
-    }
-  }
-
-  async function loadData() {
-    syncStatus.startLoading();
-    try {
-      const total = await loadDataFromBackend(() => fetchMedicines().unwrap());
-      setLocalMedicines(await listMedicinesLocal());
-      await syncStatus.markLoadSuccess(total);
-    } catch (error) {
-      syncStatus.markError(error instanceof Error ? error.message : "Falha ao carregar dados do backend.");
-    }
-  }
+  const { permission: notificationPermission, enableNotifications } = useNotificationPermission();
+  useReminderPolling();
+  const {
+    validationError,
+    localSaveMessage,
+    localMedicines,
+    editingMedicine,
+    formValues,
+    onSubmit,
+    startEdit,
+    removeMedicine,
+    saveData,
+    loadData
+  } = useMedicinesCrud({
+    syncStatus,
+    putSnapshot: (medicines) => putMedicinesSnapshot(medicines).unwrap(),
+    fetchMedicines: () => fetchMedicines().unwrap()
+  });
 
   const isSyncRunning = syncStatus.state.phase === "saving" || syncStatus.state.phase === "loading";
 
